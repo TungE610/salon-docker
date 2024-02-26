@@ -20,6 +20,7 @@
         "laravel/socialite": "^5.9",
         "laravel/tinker": "^2.0",
         "laravel/vonage-notification-channel": "^2.5",
+        "lcobucci/jwt": "^4.3",
         "mariuzzo/laravel-js-localization": "^1.10",
         "tightenco/ziggy": "^1.0",
         "twilio/sdk": "^7.11"
