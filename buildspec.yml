@@ -6,7 +6,7 @@ phases:
     runtime-versions:
       php: 8.2
     commands:
-      - composer update
+      - composer install
       - echo 'install'
   pre_build:
     on-failure: ABORT
