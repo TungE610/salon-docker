@@ -4,8 +4,9 @@ phases:
   install:
     on-failure: ABORT
     runtime-versions:
-      php: 8.1
+      php: 7.4
     commands:
+      - composer update
       - echo 'install'
   pre_build:
     on-failure: ABORT
@@ -16,7 +17,6 @@ phases:
     on-failure: ABORT
     commands:
       - cp .env.prod .env
-      - composer update
       - docker build -t $IMAGE .
       - docker tag $IMAGE:$IMAGE_TAG $REPOSITORY/$IMAGE:$IMAGE_TAG
   post_build:
