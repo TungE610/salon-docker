@@ -6,7 +6,7 @@ phases:
     runtime-versions:
       php: 8.2
     commands:
-      - composer install
+      - composer install --ignore-platform-req=ext-sodium
       - echo 'install'
   pre_build:
     on-failure: ABORT
