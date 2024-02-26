@@ -7,6 +7,7 @@ phases:
       php: 8.2
     commands:
       - composer install --ignore-platform-req=ext-sodium
+      - composer global config platform-check false
       - echo 'install'
   pre_build:
     on-failure: ABORT
