@@ -23,6 +23,7 @@ fi
 
 # php artisan migrate
 php artisan clear
+php artisan config:clear
 php artisan optimize:clear
 php artisan migrate
 
