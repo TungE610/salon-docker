@@ -18,6 +18,7 @@ if [ ! -f ".env" ]; then
     ;;
     esac
 else
+    cp .env.prod .env
     echo "env file exists."
 fi
 
