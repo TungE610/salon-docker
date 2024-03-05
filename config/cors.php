@@ -17,7 +17,7 @@ return [
 
     'paths' => ['api/*'],
 
-    'allowed_methods' => ['*'],
+    'allowed_methods' => ['*gocut-salon.com'],
 
     'allowed_origins' => ['*'],
 
