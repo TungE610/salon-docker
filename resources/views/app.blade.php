@@ -20,6 +20,7 @@
     </head>
     <body class="font-sans antialiased">
         @inertia
+        Tung dep trai vcl
         @env ('local')
             <script src="http://localhost:8080/js/bundle.js"></script>
         @endenv
