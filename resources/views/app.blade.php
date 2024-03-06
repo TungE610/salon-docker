@@ -3,7 +3,6 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="X-CSRF-TOKEN" content="{{ csrf_token() }}">
         <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests"> 
 
         <title inertia>{{ config('app.name', 'Laravel') }}</title>
@@ -21,7 +20,6 @@
     </head>
     <body class="font-sans antialiased">
         @inertia
-        Tung
         @env ('local')
             <script src="http://localhost:8080/js/bundle.js"></script>
         @endenv
