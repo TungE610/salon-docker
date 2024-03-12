@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import ApplicationLogo from '@/Components/ApplicationLogo';
 import { Link } from '@inertiajs/inertia-react';
 import { Select } from "antd";
 import { useLang } from "@/Context/LangContext";
@@ -21,13 +20,10 @@ export default function Guest({ children }) {
 
     return (
         <div className="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-gray-100">
-            <div>
-                <Link href="/">
-                    <ApplicationLogo className="w-20 h-20 fill-current text-gray-500" />
-                </Link>
+            <div className="big-logo flex items-center">
+                GoCut
             </div>
-
-            <div className="w-full sm:max-w-6xl mt-6 px-6 py-4 bg-white shadow-md overflow-hidden sm:rounded-lg">
+            <div className="sm:w-2/3 lg:w-1/3 mt-6 px-6 py-4 bg-white shadow-md overflow-hidden sm:rounded-lg">
                 {children}
             </div>
             <footer className="bg-white shadow dark:bg-gray-200 fixed bottom-0 left-0 z-20 w-full">
