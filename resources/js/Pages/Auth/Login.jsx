@@ -36,20 +36,19 @@ export default function Login({ status, canResetPassword }) {
     return (
         <Guest>
             <Head title={lang.get('strings.Login')} />
-
             {status && <div className="mb-4 font-medium text-sm text-green-600">{status}</div>}
 
             <ValidationErrors errors={errors} />
 
             <form onSubmit={submit}>
+                <input type='hidden' name='_token' value='{{ csrf_token() }}' />
                 <div>
-                    <Label forInput="email" value="Email" />
-
+                    <Label forInput="email" value={"Email"}/>
                     <Input
                         type="text"
                         name="email"
                         value={data.email}
-                        className="mt-1 block w-full"
+                        className="mt-1 block w-1/2"
                         autoComplete="username"
                         isFocused={true}
                         handleChange={onHandleChange}

@@ -7,7 +7,7 @@ import ColumnChart from '@/Components/ColumnChart';
 import CustomModal from '@/Components/CustomModal';
 import CustomTable from '@/Components/CustomeTable';
 import { Button, Select, Form, Input, notification, DatePicker, Progress } from 'antd';
-import { EditOutlined, DollarCircleOutlined, UserOutlined} from '@ant-design/icons';
+import { EditOutlined, UserOutlined} from '@ant-design/icons';
 import { Inertia } from '@inertiajs/inertia'
 import axios from "axios";
 import moment from 'moment';

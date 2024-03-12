@@ -18,6 +18,8 @@ class DatabaseSeeder extends Seeder
             CreateInitialAdminAccount::class,
             SalonRolesSeeder::class,
             PackageSeeder::class,
+            UsersSeeder::class,
+            SalonsSeeder::class,
         ]);
     }
 }

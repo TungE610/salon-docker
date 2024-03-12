@@ -30,10 +30,10 @@ class Salon extends Model
         return $this->hasMany(Customer::class, 'salon_id', 'id');
     }
 
-    public function registration(): BelongsTo
-    {
-        return $this->belongsTo(Registration::class, 'owner_email', 'email');
-    }
+    // public function registration(): BelongsTo
+    // {
+    //     return $this->belongsTo(Registration::class, 'owner_email', 'email');
+    // }
 
     public function package(): BelongsTo
     {

@@ -68,6 +68,8 @@ export default function Register(props) {
             <ValidationErrors errors={errors} />
 
             <form className="pb-20" onSubmit={submit}>
+                <input type='hidden' name='_token' value='{{ csrf_token() }}' />
+
                 <div className="mt-4">
                     <Label forInput="firstName" value={lang.get('strings.First-Name')} />
 

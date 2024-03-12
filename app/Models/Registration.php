@@ -13,10 +13,10 @@ class Registration extends Model
 
     protected $fillable = ['*'];
 
-    public function salon(): HasOne
-    {
-        return $this->hasOne(Salon::class, 'owner_email', 'email');
-    }
+    // public function salon(): HasOne
+    // {
+    //     return $this->hasOne(Salon::class, 'owner_email', 'email');
+    // }
     public function package(): BelongsTo
     {
         return $this->belongsTo(Package::class, 'package_id', 'id');
