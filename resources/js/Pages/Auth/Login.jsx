@@ -7,7 +7,6 @@ import Label from '@/Components/Label';
 import ValidationErrors from '@/Components/ValidationErrors';
 import { Head, Link, useForm } from '@inertiajs/inertia-react';
 import { useLang } from "@/Context/LangContext";
-import { Image } from "antd";
 
 export default function Login({ status, canResetPassword }) {
     const { data, setData, post, processing, errors, reset } = useForm({
@@ -37,26 +36,24 @@ export default function Login({ status, canResetPassword }) {
         <Guest>
             <Head title={lang.get('strings.Login')} />
             {status && <div className="mb-4 font-medium text-sm text-green-600">{status}</div>}
-
             <ValidationErrors errors={errors} />
-
             <form onSubmit={submit}>
                 <input type='hidden' name='_token' value='{{ csrf_token() }}' />
-                <div>
-                    <Label forInput="email" value={"Email"}/>
+                <div className='pb-4 pt-3'>
+                    <Label forInput="email" value={"Email: "}/>
                     <Input
                         type="text"
                         name="email"
                         value={data.email}
-                        className="mt-1 block w-1/2"
+                        className="mt-1 block w-full"
                         autoComplete="username"
                         isFocused={true}
                         handleChange={onHandleChange}
                     />
                 </div>
 
-                <div className="mt-4">
-                    <Label forInput="password" value={lang.get('strings.Password')} />
+                <div className="mt-4 pb-5">
+                    <Label forInput="password" value={lang.get('strings.Password') + ":"} />
 
                     <Input
                         type="password"
@@ -91,12 +88,12 @@ export default function Login({ status, canResetPassword }) {
                     </Button>
                 </div>
             </form>
-            <div className="flex items-center justify-end mt-4">
+            {/* <div className="flex items-center justify-end mt-4">
                 <a href={route('oauth.redirect', { provider: 'google' })}>
                     <Image src="https://developers.google.com/identity/images/btn_google_signin_dark_normal_web.png"
                         alt={lang.get('strings.Login-With-Google')} preview={false} />
                 </a>
-            </div>
+            </div> */}
         </Guest>
     );
 }

@@ -5,6 +5,7 @@ import { Select, Button, Form, Input, InputNumber } from 'antd';
 import { Inertia } from "@inertiajs/inertia";
 import welcomeBackground from '../../../public/images/welcome-background.svg';
 import checkIcon from '../../../public/images/check.svg';
+import { Link } from '@inertiajs/inertia-react';
 
 export default function Welcome(props) {
     const { lang, changeLocale } = useLang();
@@ -27,11 +28,11 @@ export default function Welcome(props) {
                     <div className="logo flex items-center">
                         GoCut
                     </div>
-                    <a href={route('login')}>
+                    <Link href={route('login')}>
                         <div className="welcome-signin-btn flex items-center bg-[#1C274C] px-10 text-white h-10 text-xl tracking-widest font-bold cursor-pointer font-bebas">
                                 Sign in
                         </div>
-                    </a>
+                    </Link>
                 </div>
                 <div className=" w-screen sm:px-8 lg:px-16 h-screen border-y-2 overflow-hidden" 
                         style={{ backgroundImage: `url(${welcomeBackground})`, backgroundSize: 'cover' }}

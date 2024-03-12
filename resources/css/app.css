@@ -9,7 +9,8 @@
       font-family: Bebas, system-ui sans-serif;
     }
   }
-
+  
+.big-logo,
 .logo {
     font-family: 'Bebas Neue', cursive;
     font-size: 3em;
@@ -24,12 +25,20 @@
     padding: 0 10px;
 }
 
+.big-logo {
+    font-size: 6rem;
+}
+    
+.big-logo:hover,
 .logo:hover {
     background-size: 100% 100%;
     background-position: 0% 100%;
     transition: background-position .7s, background-size .5s ease-in-out;
     cursor: pointer;
     color: white;
+}
+.big-logo:hover {
+    border-radius: 4px;
 }
 
 .welcome-nav {
