@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import { useLang } from '../Context/LangContext';
-import { Select } from 'antd';
 import { Inertia } from "@inertiajs/inertia";
 import Input from '@/Components/Input';
 import Label from '@/Components/Label';
 import Button from '@/Components/Button';
+import ValidationErrors from '@/Components/ValidationErrors';
+import { Head, Link, useForm } from '@inertiajs/inertia-react';
 import welcomeBackground from '../../../public/images/welcome-background.svg';
 import checkIcon from '../../../public/images/check.svg';
-import { Head, Link, useForm } from '@inertiajs/inertia-react';
-import ValidationErrors from '@/Components/ValidationErrors';
+import { Select } from 'antd';
 
 export default function Welcome(props) {
     const { lang, changeLocale } = useLang();
@@ -45,7 +45,7 @@ export default function Welcome(props) {
 
     const submit = (e) => {
         e.preventDefault();
-
+        console.log(data);
         post(route('register'), {
             onSuccess: () => {
                 // openNotification('success',
@@ -75,7 +75,7 @@ export default function Welcome(props) {
                         </div>
                     </Link>
                 </div>
-                <div className=" w-screen sm:px-12 lg:px-20 h-screen border-y-2 overflow-hidden" 
+                <div className=" w-screen sm:px-16 lg:px-32 h-screen border-y-2 overflow-hidden" 
                         style={{ backgroundImage: `url(${welcomeBackground})`, backgroundSize: 'cover' }}
                     >
                    <div className='flex justify-between items-center h-full'>

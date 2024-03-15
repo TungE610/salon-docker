@@ -43,6 +43,7 @@ class RegisteredUserController extends Controller
     {
         $registration_status = collect(config('app.registration_status'));
         $rejected_id = $registration_status->search('Waiting');
+
         try {
             $request->validate(
                 [
@@ -58,7 +59,9 @@ class RegisteredUserController extends Controller
                     'registrationPackage' => 'required|numeric|exists:packages,id',
                 ]
             );
-
+            
+            // dd($request);
+            
             $user = Registration::create(
                 [
                     'first_name' => $request->firstName,
