@@ -67,7 +67,7 @@ class RegisteredUserController extends Controller
                     'first_name' => $request->firstName,
                     'last_name' => $request->lastName,
                     'email' => $request->email,
-                    'phone' => $request->phoneNumber,
+                    'phone_number' => $request->phoneNumber,
                     'password' => Hash::make($request->password),
                     'salon_name' => $request->salonName,
                     'address' => $request->address,
@@ -77,6 +77,7 @@ class RegisteredUserController extends Controller
                     'status' => $rejected_id,
                     'created_at' => now(),
                     'updated_at' => now(),
+                    // 'approved_by' => 1,
                 ]
             );
         } catch (Exception $e) {

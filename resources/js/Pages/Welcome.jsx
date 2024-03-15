@@ -8,14 +8,14 @@ import ValidationErrors from '@/Components/ValidationErrors';
 import { Head, Link, useForm } from '@inertiajs/inertia-react';
 import welcomeBackground from '../../../public/images/welcome-background.svg';
 import checkIcon from '../../../public/images/check.svg';
-import { Select } from 'antd';
+import { Select, notification } from 'antd';
 
 export default function Welcome(props) {
     const { lang, changeLocale } = useLang();
     const [selectedLocale, setSelectedLocale] = useState(lang.getLocale());
     const registrationPackages = props.packages.map(pk => { return { value: pk.id, label: pk.name } });
 
-    const { data, setData, post, processing, errors, reset } = useForm({
+    const { data, setData, post, processing, errors, setError, reset } = useForm({
         firstName: '',
         lastName: '',
         email: '',
@@ -45,13 +45,13 @@ export default function Welcome(props) {
 
     const submit = (e) => {
         e.preventDefault();
-        console.log(data);
+        
         post(route('register'), {
             onSuccess: () => {
-                // openNotification('success',
-                    // lang.get('strings.Successfully-Registered'),
-                    // lang.get('strings.Please-wait')
-                // );
+                openNotification('success',
+                    lang.get('strings.Successfully-Registered'),
+                    lang.get('strings.Please-wait')
+                );
                 reset();
             },
         });
@@ -59,6 +59,13 @@ export default function Welcome(props) {
 
     const onSelectedPackageChange = (value) => {
         setData(prevData => { return { ...prevData, registrationPackage: value } });
+    };
+
+    const openNotification = (type, message, description) => {
+        notification[type]({
+            message: message,
+            description: description,
+        });
     };
 
     return (

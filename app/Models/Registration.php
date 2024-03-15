@@ -11,13 +11,13 @@ class Registration extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['*'];
+    protected $guarded = [];
 
     // public function salon(): HasOne
     // {
     //     return $this->hasOne(Salon::class, 'owner_email', 'email');
     // }
-
+    
     public function package(): BelongsTo
     {
         return $this->belongsTo(Package::class, 'package_id', 'id');
