@@ -14,7 +14,7 @@ class CreateRegistrationsTable extends Migration
     public function up()
     {
         Schema::create('registrations', function (Blueprint $table) {
-            $table->increments('id');
+            $table->id();
             $table->string('salon_name', 255);
             $table->string('first_name', 255);
             $table->string('last_name', 255);
