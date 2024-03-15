@@ -25,6 +25,21 @@
     padding: 0 10px;
 }
 
+.dashboard-logo {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 3em;
+    background-size: 100% 6px;
+    background-repeat: no-repeat;
+    background-position: 100% 0%;
+    transition: background-size .7s, background-position .5s ease-in-out;
+    letter-spacing: 2px;
+    margin: 6px 0 4px;
+    color: #1C274C;
+    padding: 0 10px;
+    text-align: center;
+    border-bottom: 1px solid #ccc;
+}
+
 .big-logo {
     font-size: 6rem;
 }
@@ -96,4 +111,45 @@
   
   .welcome-signin-btn:active {
     top: 1px;
+  }
+
+  .sidebar-item:hover {
+    background-color: #1c274c37;
+  }
+
+  .sidebar-item.active {
+    background-color: #1c274c37;
+  }
+
+  .ant-menu-inline, .ant-menu-vertical, .ant-menu-vertical-left {
+    border: none!important;
+  }
+
+  .ant-layout-header {
+    height: 72px!important;
+  }
+
+  .ant-input-search-button {
+    background-color: #1C274C!important;
+    border-color: #1C274C!important;
+  }
+
+  .ant-btn-icon-only:has(span[aria-label="edit"]),
+  .ant-btn-icon-only:has(span[aria-label="eye"]),
+  .ant-btn-icon-only:has(span[aria-label="delete"])
+  {
+    padding: 1px!important;
+    width: 22px!important;
+    height: 22px!important;
+    border: none;
+    outline: none;
+  }
+  .ant-btn-icon-only:has(span[aria-label="edit"]) {
+    background-color: rgb(0, 70, 98)!important;
+  }
+  .ant-btn-icon-only:has(span[aria-label="eye"]) {
+    background-color: rgb(255, 238, 0)!important;
+  }
+  .ant-btn-icon-only:has(span[aria-label="delete"]) {
+    background-color: rgb(244, 40, 40)!important;
   }

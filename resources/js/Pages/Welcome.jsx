@@ -1,16 +1,34 @@
 import React, { useState } from 'react';
-import { Head } from '@inertiajs/inertia-react';
 import { useLang } from '../Context/LangContext';
-import { Select, Button, Form, Input, InputNumber } from 'antd';
+import { Select } from 'antd';
 import { Inertia } from "@inertiajs/inertia";
+import Input from '@/Components/Input';
+import Label from '@/Components/Label';
+import Button from '@/Components/Button';
 import welcomeBackground from '../../../public/images/welcome-background.svg';
 import checkIcon from '../../../public/images/check.svg';
-import { Link } from '@inertiajs/inertia-react';
+import { Head, Link, useForm } from '@inertiajs/inertia-react';
+import ValidationErrors from '@/Components/ValidationErrors';
 
 export default function Welcome(props) {
     const { lang, changeLocale } = useLang();
     const [selectedLocale, setSelectedLocale] = useState(lang.getLocale());
-    
+    const registrationPackages = props.packages.map(pk => { return { value: pk.id, label: pk.name } });
+
+    const { data, setData, post, processing, errors, reset } = useForm({
+        firstName: '',
+        lastName: '',
+        email: '',
+        phoneNumber: '',
+        password: '',
+        password_confirmation: '',
+        salonName: '',
+        address: '',
+        staffNumber: 0,
+        seatNumber: 0,
+        registrationPackage: '',
+    });
+
     const handleLocaleChange = (value) => {
         localStorage.removeItem("locale");
         localStorage.setItem("locale", value);
@@ -20,6 +38,29 @@ export default function Welcome(props) {
 
         Inertia.get(route('locale', { lang: value } ));
     };
+
+    const onHandleChange = (event) => {
+        setData(event.target.name, event.target.type === 'checkbox' ? event.target.checked : event.target.value);
+    };
+
+    const submit = (e) => {
+        e.preventDefault();
+
+        post(route('register'), {
+            onSuccess: () => {
+                // openNotification('success',
+                    // lang.get('strings.Successfully-Registered'),
+                    // lang.get('strings.Please-wait')
+                // );
+                reset();
+            },
+        });
+    };
+
+    const onSelectedPackageChange = (value) => {
+        setData(prevData => { return { ...prevData, registrationPackage: value } });
+    };
+
     return (
         <>
             <Head title="Welcome" />
@@ -30,15 +71,15 @@ export default function Welcome(props) {
                     </div>
                     <Link href={route('login')}>
                         <div className="welcome-signin-btn flex items-center bg-[#1C274C] px-10 text-white h-10 text-xl tracking-widest font-bold cursor-pointer font-bebas">
-                                Sign in
+                            Sign in
                         </div>
                     </Link>
                 </div>
-                <div className=" w-screen sm:px-8 lg:px-16 h-screen border-y-2 overflow-hidden" 
+                <div className=" w-screen sm:px-12 lg:px-20 h-screen border-y-2 overflow-hidden" 
                         style={{ backgroundImage: `url(${welcomeBackground})`, backgroundSize: 'cover' }}
                     >
-                   <div className='flex items-center h-full'>
-                        <div>
+                   <div className='flex justify-between items-center h-full'>
+                        <div className="w-1/2">
                             <div className='font-bebas text-3xl'>
                                 Power your salon with software you can count on
                             </div>
@@ -60,8 +101,182 @@ export default function Welcome(props) {
                                 </div>
                             </div>
                         </div>
-                        <div className='bg-[#ccc]'>
-                            
+                        <div className='bg-[#f4f5f5] h-3/4 sm:w-2/5 lg:w-1/3 border border-slate-400 rounded-xl py-4 px-6'>
+                            <ValidationErrors errors={errors} />
+
+                            <form className="pb-20" onSubmit={submit}>
+                                <input type='hidden' name='_token' value='{{ csrf_token() }}' />
+
+                                <div className="flex gap-3 justify-between">
+                                    <div className="mt-4 w-1/2">
+                                        <Label forInput="firstName" value={lang.get('strings.First-Name')} />
+
+                                        <Input
+                                            type="text"
+                                            name="firstName"
+                                            value={data.firstName}
+                                            className="mt-1 block w-full"
+                                            autoComplete="firstName"
+                                            isFocused={true}
+                                            handleChange={onHandleChange}
+                                            required
+                                        />
+                                    </div>
+
+                                    <div className="mt-4 w-1/2">
+                                        <Label forInput="lastName" value={lang.get('strings.Last-Name')} />
+
+                                        <Input
+                                            type="text"
+                                            name="lastName"
+                                            value={data.lastName}
+                                            className="mt-1 block w-full"
+                                            autoComplete="lastName"
+                                            isFocused={true}
+                                            handleChange={onHandleChange}
+                                            required
+                                        />
+                                    </div>
+                                </div>
+                                <div className="flex gap-3 justify-between">
+
+                                <div className="mt-4 w-1/2">
+                                        <Label forInput="email" value="Email" />
+
+                                        <Input
+                                            type="email"
+                                            name="email"
+                                            value={data.email}
+                                            className="mt-1 block w-full"
+                                            autoComplete="username"
+                                            handleChange={onHandleChange}
+                                            required
+                                        />
+                                    </div>
+
+                                    <div className="mt-4 w-1/2">
+                                        <Label forInput="phoneNumber" value={lang.get('strings.Phone')} />
+
+                                        <Input
+                                            type="text"
+                                            name="phoneNumber"
+                                            value={data.phoneNumber}
+                                            className="mt-1 block w-full"
+                                            autoComplete="phoneNumber"
+                                            handleChange={onHandleChange}
+                                            required
+                                        />
+                                    </div>
+                                </div>
+                                <div className="flex gap-3 justify-between">
+
+                                    <div className="mt-4 w-1/2">
+                                        <Label forInput="password" value={lang.get('strings.Password')} />
+
+                                        <Input
+                                            type="password"
+                                            name="password"
+                                            value={data.password}
+                                            className="mt-1 block w-full"
+                                            autoComplete="new-password"
+                                            handleChange={onHandleChange}
+                                            required
+                                        />
+                                    </div>
+
+                                    <div className="mt-4 w-1/2">
+                                        <Label forInput="password_confirmation" value={lang.get('strings.Confirm-Password')} />
+
+                                        <Input
+                                            type="password"
+                                            name="password_confirmation"
+                                            value={data.password_confirmation}
+                                            className="mt-1 block w-full"
+                                            handleChange={onHandleChange}
+                                            required
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="mt-4">
+                                    <Label forInput="salonName" value={lang.get('strings.Salon-Name')}/>
+
+                                    <Input
+                                        type="text"
+                                        name="salonName"
+                                        value={data.salonName}
+                                        className="mt-1 block w-full"
+                                        autoComplete="salonName"
+                                        handleChange={onHandleChange}
+                                        required
+                                    />
+                                </div>
+
+                                <div className="mt-4">
+                                    <Label forInput="address" value={lang.get('strings.Address')}/>
+
+                                    <Input
+                                        type="text"
+                                        name="address"
+                                        value={data.address}
+                                        className="mt-1 block w-full"
+                                        autoComplete="address"
+                                        handleChange={onHandleChange}
+                                        required
+                                    />
+                                </div>
+
+                                <div className="mt-4 flex gap-x-4">
+                                    <div className="w-1/2">
+                                        <Label forInput="staffNumber" value={lang.get('strings.Staff-Number')} />
+
+                                        <Input
+                                            type="number"
+                                            name="staffNumber"
+                                            value={data.staffNumber}
+                                            className="mt-1 block w-full"
+                                            autoComplete="staffNumber"
+                                            handleChange={onHandleChange}
+                                            required
+                                        />
+                                    </div>
+                                    <div className="w-1/2">
+                                        <Label forInput="seatNumber" value={lang.get('strings.Seat-Number')} />
+
+                                        <Input
+                                            type="number"
+                                            name="seatNumber"
+                                            value={data.seatNumber}
+                                            className="mt-1 block w-full"
+                                            autoComplete="seatNumber"
+                                            handleChange={onHandleChange}
+                                            required
+                                        />
+                                    </div>
+                                </div>
+
+                                <div className="mt-4">
+                                    <Label className="mb-3" forInput="registrationPackage" value={lang.get('strings.Registration-Package')} />
+
+                                    <Select
+                                        placeholder="Select a package"
+                                        onChange={onSelectedPackageChange}
+                                        options={registrationPackages}
+                                        size='large'
+                                        className='w-1/3'
+                                    />
+                                </div>
+
+                                <div className="flex items-center justify-end mt-4">
+                                    <Link href={route('login')} className="underline text-sm text-gray-600 hover:text-gray-900">
+                                        {lang.get('strings.Already-registered')}
+                                    </Link>
+
+                                    <Button className="ml-4" processing={processing}>
+                                        {lang.get('Register')}
+                                    </Button>
+                                </div>
+                            </form>
                         </div>
                    </div>
                    <div>

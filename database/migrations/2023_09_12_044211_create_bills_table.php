@@ -15,7 +15,7 @@ class CreateBillsTable extends Migration
     {
         Schema::create('bills', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('order_id')->constrained('orders');
+            $table->foreignId('order_id')->constrained('orders')->onDelete('cascade');
             $table->string('payment_method', 255);
             $table->integer('total');
             $table->integer('cash');

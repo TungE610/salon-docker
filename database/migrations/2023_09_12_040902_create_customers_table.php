@@ -15,9 +15,12 @@ class CreateCustomersTable extends Migration
     {
         Schema::create('customers', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('salon_id')->constrained('salons');
-            $table->string('name', 255);
-            $table->string('phone', 15);
+            $table->foreignId('salon_id')->constrained('salons')->onDelete('cascade');
+            $table->string('full_name', 255)->nullable();
+            $table->string('dob', 15);
+            $table->string('phone_number', 30)->nullable();
+            $table->string('gender', 15);
+            $table->string('address', 255);
             $table->boolean('is_active')->default(false);
             $table->timestamps();
         });

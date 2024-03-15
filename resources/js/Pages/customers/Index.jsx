@@ -1,16 +1,55 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Authenticated from '@/Layouts/Authenticated';
 import { Head, useForm } from '@inertiajs/inertia-react';
 import { useLang } from '../../Context/LangContext';
 import CustomTable from '@/Components/CustomeTable';
-import { Checkbox, Input, Modal, notification, Button, Form } from 'antd';
-import { EditOutlined, EyeOutlined, DeleteOutlined, ExclamationCircleOutlined, PlusCircleOutlined } from '@ant-design/icons';
+import Highlighter from 'react-highlight-words';
+import { Checkbox, Input, Modal, notification, Button, Form, Space, Typography, Popconfirm } from 'antd';
+import { EditOutlined, EyeOutlined, DeleteOutlined, ExclamationCircleOutlined, PlusCircleOutlined, ExportOutlined, ImportOutlined, SearchOutlined } from '@ant-design/icons';
 import { Inertia } from '@inertiajs/inertia'
 import 'antd/dist/antd.css';
+import {CSVLink} from "react-csv"
+import { useReactToPrint } from 'react-to-print';
+
+const EditableCell = ({
+    editing,
+    dataIndex,
+    title,
+    inputType,
+    record,
+    index,
+    children,
+    ...restProps
+  }) => {
+    const inputNode = inputType === 'number' ? <InputNumber /> : <Input />;
+    return (
+      <td {...restProps}>
+        {editing ? (
+          <Form.Item
+            name={dataIndex}
+            style={{
+              margin: 0,
+            }}
+            rules={[
+              {
+                required: true,
+                message: `Please Input ${title}!`,
+              },
+            ]}
+          >
+            {inputNode}
+          </Form.Item>
+        ) : (
+          children
+        )}
+      </td>
+    );
+  };
 
 export default function Staffs(props) {
 
-    const [customers, setCustomers] = useState(props[0].customers);
+    const initialData = props[0].customers.map(customer => { return {key: customer.id, ...customer, created_at: customer.created_at.replace("T", " ").replace("Z", "").replace(/\.?0+$/, '').replace(/\.$/, '')}})
+    const [customers, setCustomers] = useState(initialData);
     const [phoneNumber, setPhoneNumber] = useState('');
     const [name, setName] = useState('');
     const [isActive, setIsActive] = useState(false);
@@ -23,9 +62,17 @@ export default function Staffs(props) {
     const [editMode, setEditMode] = useState(false);
     const { Search } = Input;
     const [searchValue, setSearchValue] = useState('');
+    const searchInput = useRef(null);
+    const [searchText, setSearchText] = useState('');
+    const [searchedColumn, setSearchedColumn] = useState('');
 
+    const componentRef = useRef();
+    const handlePrint = useReactToPrint({
+      content: () => componentRef.current,
+    });
+    
     useEffect(() => {
-        setCustomers(props[0].customers.filter(item => (
+        setCustomers(initialData.filter(item => (
             item.name.toLowerCase().includes(searchValue.toLowerCase()) ||
             item.phone.toLowerCase().includes(searchValue.toLowerCase())
         )));
@@ -81,12 +128,12 @@ export default function Staffs(props) {
         setEditMode(false);
     };
 
-    const showModalEditCustomer = (values) => {
-        setEditMode(true);
-        setModalTitle(lang.get('strings.Modal-Edit-Customer'))
-        setIsModalOpen(true);
-        form.setFieldsValue(values);
-    };
+    // const showModalEditCustomer = (values) => {
+    //     setEditMode(true);
+    //     setModalTitle(lang.get('strings.Modal-Edit-Customer'))
+    //     setIsModalOpen(true);
+    //     form.setFieldsValue(values);
+    // };
 
     const openNotification = (type, message, description) => {
         notification[type]({
@@ -151,22 +198,190 @@ export default function Staffs(props) {
         },
     };
 
+    const [editingKey, setEditingKey] = useState('');
+    const isEditing = (record) => record.key === editingKey;
+
+    const edit = (record) => {
+      form.setFieldsValue({
+        name: '',
+        age: '',
+        address: '',
+        ...record,
+      });
+      setEditingKey(record.key);
+    };
+
+    const cancel = () => {
+      setEditingKey('');
+    };
+    const save = async (key) => {
+      try {
+        const row = await form.validateFields();
+        const newData = [...customers];
+        const index = newData.findIndex((item) => key === item.key);
+        if (index > -1) {
+          const item = newData[index];
+          newData.splice(index, 1, {
+            ...item,
+            ...row,
+          });
+          Inertia.put(route('customers.update', { customer: index + 1 }), { ...newData }, {
+            onSuccess: () => {
+                openNotification('success',
+                    lang.get('strings.Successfully-Edited'),
+                    lang.get('strings.Successfully-Edited-Customer')
+                );
+            },
+        });
+          setCustomers(newData);
+          setEditingKey('');
+        } else {
+          newData.push(row);
+          setCustomers(newData);
+          setEditingKey('');
+        }
+      } catch (errInfo) {
+        console.log('Validate Failed:', errInfo);
+      }
+    };
+
+    const handleSearch = (selectedKeys, confirm, dataIndex) => {
+        confirm();
+        setSearchText(selectedKeys[0]);
+        setSearchedColumn(dataIndex);
+    };
+
+    const handleReset = (clearFilters) => {
+        clearFilters();
+        setSearchText('');
+      };
+
+    const getColumnSearchProps = (dataIndex) => ({
+        filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters, close }) => (
+          <div
+            style={{
+              padding: 8,
+            }}
+            onKeyDown={(e) => e.stopPropagation()}
+          >
+            <Input
+              ref={searchInput}
+              placeholder={`Search ${dataIndex}`}
+              value={selectedKeys[0]}
+              onChange={(e) => setSelectedKeys(e.target.value ? [e.target.value] : [])}
+              onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
+              style={{
+                marginBottom: 8,
+                display: 'block',
+              }}
+            />
+            <Space>
+              <Button
+                type="primary"
+                onClick={() => handleSearch(selectedKeys, confirm, dataIndex)}
+                icon={<SearchOutlined />}
+                size="small"
+                style={{
+                  width: 90,
+                }}
+              >
+                Search
+              </Button>
+              <Button
+                onClick={() => clearFilters && handleReset(clearFilters)}
+                size="small"
+                style={{
+                  width: 90,
+                }}
+              >
+                Reset
+              </Button>
+              <Button
+                type="link"
+                size="small"
+                onClick={() => {
+                  confirm({
+                    closeDropdown: false,
+                  });
+                  setSearchText(selectedKeys[0]);
+                  setSearchedColumn(dataIndex);
+                }}
+              >
+                Filter
+              </Button>
+              <Button
+                type="link"
+                size="small"
+                onClick={() => {
+                  close();
+                }}
+              >
+                close
+              </Button>
+            </Space>
+          </div>
+        ),
+        filterIcon: (filtered) => (
+          <SearchOutlined
+            style={{
+              color: filtered ? '#3d5c98' : undefined,
+            }}
+          />
+        ),
+        onFilter: (value, record) =>
+          record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
+
+        onFilterDropdownOpenChange: (visible) => {
+          if (visible) {
+            setTimeout(() => searchInput.current?.select(), 100);
+          }
+        },
+
+        render: (text) =>
+          searchedColumn === dataIndex ? (
+            <Highlighter
+              highlightStyle={{
+                backgroundColor: '#ffc069',
+                padding: 0,
+              }}
+              searchWords={[searchText]}
+              autoEscape
+              textToHighlight={text ? text.toString() : ''}
+            />
+          ) : (
+            text
+          ),
+      });
+  
+
     const columns = [
         {
             title: 'ID',
             dataIndex: 'id',
+            width: 60,
+            key: 'id',
+            ...getColumnSearchProps('id'),
         },
         {
-            title: lang.get('strings.Customer-Name'),
+            title: 'Fullname',
             dataIndex: 'name',
+            sorter: (a, b) => a.name.localeCompare(b.name),
+            key: 'fullname',
+            editable: true,
+            ...getColumnSearchProps('name'),
         },
         {
-            title: lang.get('strings.Customer-Phone'),
+            title: 'Phone Number',
             dataIndex: 'phone',
+            width: 250,
+            sorter: (a, b) => a.phone.localeCompare(b.phone),
+            key: 'phone',
+            editable: true,
         },
         {
             title: lang.get('strings.Active'),
             align: 'center',
+            width: 220,
             filters: filters_active,
             onFilter: (value, record) => {
                 if (record.is_active == value) {
@@ -177,28 +392,62 @@ export default function Staffs(props) {
                 return (
                     <Checkbox checked={record.is_active} />
                 )
-            }
+            },
+            key: 'active',
+            editable: true,
+        },
+        {
+            title: 'Created At',
+            dataIndex: 'created_at',
+            width: 220,
+            key: 'created_at',
+            ...getColumnSearchProps('created_at'),
         },
         {
             title: lang.get('strings.Action'),
             align: 'center',
+            width: 150,
             render: (text, record) => {
-                return (
+                const editable = isEditing(record);
+
+                return editable ? (
+                    <span>
+                      <Typography.Link
+                        onClick={() => save(record.key)}
+                        style={{
+                          marginRight: 8,
+                        }}
+                      >
+                        Save
+                      </Typography.Link>
+                      <Popconfirm title="Sure to cancel?" onConfirm={cancel}>
+                        <a>Cancel</a>
+                      </Popconfirm>
+                    </span>
+                  ) : (
                     <div className="flex gap-3 justify-center">
-                        <EditOutlined style={{ fontSize: 19, color: '#1c5dfd' }} onClick={
+                        <Button icon={  <EditOutlined style={{ fontSize: 17, color: '#fff' }} onClick={
                             () => {
-                                showModalEditCustomer(record);
-                            }} />
-                        <EyeOutlined style={{ fontSize: 19 }} onClick={
+                                // showModalEditCustomer(record);
+                                edit(record);
+                            }} />}>
+
+                        </Button>
+                        <Button icon={<EyeOutlined style={{ fontSize: 19, color: '#000' }} onClick={
                             () => {
                                 Inertia.get(route('customers.show', { customer: record.id }));
                             }} />
-                        <DeleteOutlined style={{ fontSize: 19, color: '#e80101' }} onClick={() => {
+                        }>
+                        </Button>
+                        <Button icon={<DeleteOutlined style={{ fontSize: 19, color: '#fff' }} onClick={() => {
                             showDeleteConfirm(record)
-                        }} />
+                        }} />}>
+                            
+                        </Button>
                     </div>
                 )
-            }
+            },
+            key: 'action',
         },
     ];
 
@@ -222,6 +471,26 @@ export default function Staffs(props) {
     const otpModalClose = () => {
         setOtpModalOpen(false);
     }
+
+    const exportExcel = () => {
+
+    }
+    const mergedColumns = columns.map((col) => {
+        if (!col.editable) {
+          return col;
+        }
+        return {
+          ...col,
+          onCell: (record) => ({
+            record,
+            inputType: col.dataIndex === 'age' ? 'number' : 'text',
+            dataIndex: col.dataIndex,
+            title: col.title,
+            editing: isEditing(record),
+          }),
+        };
+      });
+
     return (
         <Authenticated
             auth={props.auth}
@@ -231,16 +500,40 @@ export default function Staffs(props) {
         >
             <Head title={lang.get('strings.List-Customers')} />
 
-            <div className="py-12">
+            <div className="py-6">
                 <div className='sm:px-6 lg:px-8 w-full'>
-                    <h2 className='font-semibold text-2xl text-gray-800 leading-tight'>{lang.get('strings.List-Customers')}</h2>
+                    <h2 className='font-semibold font-bebas tracking-wider text-2xl text-gray-800 leading-tight'>{lang.get('strings.List-Customers')}</h2>
                 </div>
-                <div className="flex gap-4 justify-between w-full mr:3 mb-8 sm:px-6 lg:px-8 mt-8">
-                    <Button type="primary" shape="round" icon={<PlusCircleOutlined />} size={'large'} onClick={showModal}>
-                        {lang.get('strings.Create-Customer')}
+                <div className="flex gap-4 justify-between w-full mr:3 mb-8 sm:px-6 lg:px-8 mt-12">      
+                    <Button style={{ backgroundColor: '#1C274C', color: '#fff', fontWeight: 'bold' }} shape="round" size="large" onClick={showModal}>
+                        <div className="flex items-center gap-3 font-bebas tracking-wide text-lg">
+                            <PlusCircleOutlined />
+                            {lang.get('strings.Create-Customer')}
+                        </div>
                     </Button>
-                    <Search placeholder="input name or phone" onChange={searchChangeHandler}
-                        enterButton bordered size="large" allowClear style={{ width: 304 }} />
+                    <div className="flex gap-4">
+                        <Button style={{ backgroundColor: '#1C274C', color: '#fff', fontWeight: 'bold' }} shape="round" size="large" onClick={exportExcel}>
+                            <div className="flex items-center gap-3 font-bebas text-lg tracking-wider">
+                                <ExportOutlined />
+                                <CSVLink
+                                    filename={"Customer.csv"}
+                                    data={customers}
+                                    className="text-white"
+                                    separator={";"}
+                                >
+                                Export
+                                </CSVLink>
+                            </div>
+                        </Button>
+                        <Button style={{ backgroundColor: '#1C274C', color: '#fff', fontWeight: 'bold' }} shape="round" size="large" onClick={exportExcel}>
+                            <div className="flex items-center gap-3 font-bebas text-lg tracking-wider">
+                                <ImportOutlined />
+                                Import
+                            </div>
+                        </Button>
+                        <Search placeholder="input name or phone number" onChange={searchChangeHandler}
+                            enterButton bordered size="large" allowClear style={{ width: 304 }} />
+                    </div>
                 </div>
                 <div className="flex justify-end px-8">
                     <Modal title="OTP" open={otpModalOpen} onCancel={otpModalClose} footer={null}>
@@ -288,18 +581,18 @@ export default function Staffs(props) {
                             </Form.Item>
                             <Form.Item
                                 name="name"
-                                label={lang.get('strings.Customer-Name')}
+                                label='Fullname'
                                 rules={[
                                     {
                                         required: true,
-                                    },
+                                    }
                                 ]}
                             >
                                 <Input />
                             </Form.Item>
                             <Form.Item
                                 name="phone"
-                                label={lang.get('strings.Customer-Phone')}
+                                label='Phone Number'
                                 rules={[
                                     {
                                         required: true,
@@ -324,11 +617,21 @@ export default function Staffs(props) {
                     </Modal>
                 </div>
                 <div className="max-w-full mx-auto sm:px-6 lg:px-8">
-                    <CustomTable
-                        bordered
-                        columns={columns}
-                        dataSource={customers}
-                        onChange={onTableChange} />
+                    <Form form={form} component={false}>
+                        <CustomTable
+                            bordered
+                            columns={columns}
+                            dataSource={customers}
+                            onChange={onTableChange}
+                            columns={mergedColumns}
+                            components={{
+                                body: {
+                                cell: EditableCell,
+                                },
+                            }}
+                            rowClassName="editable-row"
+                        />
+                    </Form>
                 </div>
             </div>
         </Authenticated>

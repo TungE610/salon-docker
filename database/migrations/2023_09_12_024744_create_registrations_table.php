@@ -14,18 +14,18 @@ class CreateRegistrationsTable extends Migration
     public function up()
     {
         Schema::create('registrations', function (Blueprint $table) {
-            $table->id();
+            $table->increments('id');
             $table->string('salon_name', 255);
             $table->string('first_name', 255);
             $table->string('last_name', 255);
             $table->string('email', 255)->unique();
-            $table->string('phone', 15);
+            $table->string('phone_number', 30)->unique();
             $table->string('password');
             $table->string('address');
             $table->integer('staffs_number', false, true);
             $table->integer('seats_number', false, true);
-            $table->string('registration_package', 255);
             $table->tinyInteger('status')->default(0);
+            $table->foreignId('package_id')->constrained('packages');
             $table->timestamp('approved_at')->nullable();
             $table->integer('approved_by', false, true);
             $table->timestamps();

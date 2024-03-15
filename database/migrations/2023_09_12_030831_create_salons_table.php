@@ -18,10 +18,10 @@ class CreateSalonsTable extends Migration
             $table->string('owner_email', 255)->unique();
             $table->string('name', 255);
             $table->string('address', 255);
-            $table->string('registration_package', 255);
             $table->boolean('is_active')->default(false);
-            $table->timestamps();
             $table->foreign('owner_email')->references('email')->on('users');
+            $table->foreignId('package_id')->constrained('packages');
+            $table->timestamps();
         });
     }
 
