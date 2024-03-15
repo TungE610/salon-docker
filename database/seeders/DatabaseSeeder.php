@@ -20,6 +20,7 @@ class DatabaseSeeder extends Seeder
             PackageSeeder::class,
             UsersSeeder::class,
             SalonsSeeder::class,
+            CustomerSeeder::class,
         ]);
     }
 }

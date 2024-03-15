@@ -24,7 +24,7 @@ class RegisteredUserController extends Controller
     public function create()
     {
         return Inertia::render(
-            'Auth/Register',
+            'Welcome',
             [
                 'packages' => Package::select('id', 'name')->get(),
             ]

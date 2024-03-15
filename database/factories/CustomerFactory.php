@@ -16,8 +16,10 @@ class CustomerFactory extends Factory
     {
         return [
             'salon_id' => Salon::where('is_active', true)->get()->random()->id,
-            'name' => $this->faker->name(),
-            'phone' => $this->faker->phoneNumber(),
+            'full_name' => $this->faker->name(),
+            'dob' => $this->faker->date(),
+            'phone_number' => $this->faker->phoneNumber(),
+            'address' => $this->faker->address(),
             'is_active' => true,
             'created_at' => now(),
             'updated_at' => now(),

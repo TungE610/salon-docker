@@ -16,7 +16,7 @@ class CreateSalonUserPivotTable extends Migration
         Schema::create('salon_user', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained('users');
-            $table->foreignId('salon_id')->constrained('salons');
+            $table->foreignId('salon_id')->constrained('salons')->onDelete('cascade');
             $table->foreignId('salon_role_id')->constrained('salon_roles');
             $table->tinyInteger('status')->default(0);
             $table->timestamps();

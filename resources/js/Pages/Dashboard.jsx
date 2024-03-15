@@ -341,7 +341,6 @@ export default function Dashboard(props) {
         const formattedEndDate = endDate.format('DD-MM-YYYY');
         axios.get(route('dashboard.getData', {startDate: formattedStartDate, endDate: formattedEndDate}))
             .then((response) => {
-                console.log(response.data);
                 setDataRevenue(updateRevenueData(response.data, startDate, endDate));
             })
             .catch((error) => {
