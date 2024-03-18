@@ -63,49 +63,53 @@ class SalonController extends Controller
         $systemRoleId = DB::table('system_roles')
             ->where('name', 'user')
             ->value('id');
+        
+        // dd($validated);
+        
+        DB::table('users')->insert(
+            [
+                'email' => $validated['email'],
+                'phone_number' => $validated['phone_number'],
+                'email_verified_at' => now(),
+                'first_name' => $validated['first_name'],
+                'last_name' => $validated['last_name'],
+                'password' => $validated['password'],
+                'is_active' => $active_id,
+                'created_at' => now(),
+                'updated_at' => now(),
+                'system_role_id' => $systemRoleId,
+            ]
+        );
 
-        try {
-            DB::transaction(
-                function () use ($validated, $accepted_id, $active_id, $salon_active_id, $systemRoleId) {
-                    DB::table('salons')->insert(
-                        [
-                            'owner_email' => $validated['email'],
-                            'name' => $validated['salon_name'],
-                            'address' => $validated['address'],
-                            'package_id' => $validated['package_id'],
-                            'is_active' => $salon_active_id,
-                            'created_at' => now(),
-                            'updated_at' => now(),
-                        ]
-                    );
+        DB::table('salons')->insert(
+            [
+                'owner_email' => $validated['email'],
+                'name' => $validated['salon_name'],
+                'address' => $validated['address'],
+                'package_id' => $validated['package_id'],
+                'is_active' => $salon_active_id,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]
+        );
+        DB::table('registrations')->where('email', $validated['email'])
+            ->update([ 'status' => $accepted_id]);
+        // try {
+        //     DB::transaction(
+        //         function () use ($validated, $accepted_id, $active_id, $salon_active_id, $systemRoleId) {
 
-                    DB::table('registrations')->where('email', $validated['email'])
-                        ->update([ 'status' => $accepted_id]);
+        //         },
+        //         config('database.connections.mysql.max_attempts')
 
-                    DB::table('users')->insert(
-                        [
-                            'email' => $validated['email'],
-                            'phone' => $validated['phone'],
-                            'email_verified_at' => now(),
-                            'first_name' => $validated['first_name'],
-                            'last_name' => $validated['last_name'],
-                            'password' => $validated['password'],
-                            'is_active' => $active_id,
-                            'created_at' => now(),
-                            'updated_at' => now(),
-                            'system_role_id' => $systemRoleId,
-                        ]
-                    );
-                },
-                config('database.connections.mysql.max_attempts')
-            );
-        } catch (Exception $e) {
-            return redirect()->back()->withErrors(
-                [
-                    'store' => $e->getMessage(),
-                ]
-            );
-        }
+        //     );
+        //     // dd("done");
+        // } catch (Exception $e) {
+        //     return redirect()->back()->withErrors(
+        //         [
+        //             'store' => $e->getMessage(),
+        //         ]
+        //     );
+        // }
 
         return redirect()->route('salons.index');
     }

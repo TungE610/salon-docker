@@ -96,7 +96,7 @@ class CustomerController extends Controller
         $customer = new Customer();
 
         $customer->name = $request->name;
-        $customer->phone = $request->phoneNumber;
+        $customer->phone_number = $request->phoneNumber;
         $customer->is_active = $request->isActive;
         $customer->salon_id = session('selectedSalon');
 

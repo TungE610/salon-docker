@@ -26,11 +26,11 @@ class CheckSalonManager
         }
 
         $selectedSalonId = $request->session()->get('selectedSalon');
+
         $salonRoleId =  DB::table('salon_user')->where('user_id', $user->id)->where('salon_id', $selectedSalonId)
             ->get()->first()->salon_role_id;
 
-        if ($user && $user->systemRole == 'user'
-            && SalonRole::find($salonRoleId)->name == 'manager'
+        if ($user && $user->systemRole == 'user' && SalonRole::find($salonRoleId)->name == 'manager'
         ) {
             return $next($request);
         }

@@ -33,22 +33,20 @@ const EditProfilePage = (props) => {
         >
             <Head title={lang.get('strings.Profile')} />
 
-            <div className="py-12">
+            <div className="py-8">
                 <div className="w-full mx-auto sm:px-6 lg:px-8 space-y-6">
-                    <div className="p-4 sm:p-8 bg-white bg-zinc-200	shadow sm:rounded-lg">
+                    <div className="flex gap-24 sm:px-12 sm:py-8 bg-white bg-zinc-200 shadow sm:rounded-lg">
                         <div className="max-w-xl">
                             <UpdateProfileInformationForm user={props.auth.user} locale={locale} />
                         </div>
-                    </div>
-
-                    <div className="p-4 sm:p-8 bg-white bg-zinc-200	shadow sm:rounded-lg">
                         <div className="max-w-xl">
                             <UpdatePasswordForm user={props.auth.user} locale={locale} />
                         </div>
                     </div>
 
-                    <div className="p-4 sm:p-8 bg-white bg-zinc-200 shadow sm:rounded-lg">
-                        <div className="max-w-xl">
+
+                    <div className="bg-white bg-zinc-200 shadow sm:rounded-lg">
+                        <div className="max-w-xl sm:px-12 sm:py-8">
                             <DeleteUserForm user={props.auth.user} locale={locale} />
                         </div>
                     </div>

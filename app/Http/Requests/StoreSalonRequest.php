@@ -26,7 +26,7 @@ class StoreSalonRequest extends FormRequest
     {
         return [
             'email' => 'email|required|unique:users,email|max:255',
-            'phone' => 'string|required|unique:users,phone|max:30',
+            'phone_number' => 'string|required|unique:users,phone_number|max:30',
             'password' => 'string|required',
             'salon_name' => 'string|required|max:255',
             'first_name' => 'string|required|max:255',

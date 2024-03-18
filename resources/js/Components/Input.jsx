@@ -34,6 +34,7 @@ export default function Input({
                 required={required}
                 onChange={(e) => handleChange(e)}
                 disabled={disabled}
+                min="0"
             />
         </div>
     );

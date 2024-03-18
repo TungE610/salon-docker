@@ -9,7 +9,6 @@ import { EditOutlined, EyeOutlined, DeleteOutlined, ExclamationCircleOutlined, P
 import { Inertia } from '@inertiajs/inertia'
 import 'antd/dist/antd.css';
 import {CSVLink} from "react-csv"
-import { useReactToPrint } from 'react-to-print';
 
 const EditableCell = ({
     editing,
@@ -49,7 +48,7 @@ const EditableCell = ({
 export default function Staffs(props) {
 
     const initialData = props[0].customers.map(customer => { return {key: customer.id, ...customer, created_at: customer.created_at.replace("T", " ").replace("Z", "").replace(/\.?0+$/, '').replace(/\.$/, '')}})
-    const [customers, setCustomers] = useState(initialData);
+    const [customers, setCustomers] = useState(props[0].customers);
     const [phoneNumber, setPhoneNumber] = useState('');
     const [name, setName] = useState('');
     const [isActive, setIsActive] = useState(false);
@@ -65,16 +64,12 @@ export default function Staffs(props) {
     const searchInput = useRef(null);
     const [searchText, setSearchText] = useState('');
     const [searchedColumn, setSearchedColumn] = useState('');
+    const { Text } = Typography;
 
-    const componentRef = useRef();
-    const handlePrint = useReactToPrint({
-      content: () => componentRef.current,
-    });
-    
     useEffect(() => {
-        setCustomers(initialData.filter(item => (
-            item.name.toLowerCase().includes(searchValue.toLowerCase()) ||
-            item.phone.toLowerCase().includes(searchValue.toLowerCase())
+        setCustomers(props[0].customers.filter(item => (
+            item.full_name.toLowerCase().includes(searchValue.toLowerCase()) ||
+            item.phone_number.toLowerCase().includes(searchValue.toLowerCase())
         )));
     }, [searchValue]);
 
@@ -349,7 +344,7 @@ export default function Staffs(props) {
               textToHighlight={text ? text.toString() : ''}
             />
           ) : (
-            text
+            {text}
           ),
       });
   
@@ -364,18 +359,24 @@ export default function Staffs(props) {
         },
         {
             title: 'Fullname',
-            dataIndex: 'name',
-            sorter: (a, b) => a.name.localeCompare(b.name),
-            key: 'fullname',
+            dataIndex: 'full_name',
+            sorter: (a, b) => a.full_name.localeCompare(b.full_name),
+            key: 'full_name',
             editable: true,
-            ...getColumnSearchProps('name'),
+            ...getColumnSearchProps('full_name'),
+        },
+        {
+          title: 'Gender',
+          dataIndex: 'gender',
+          key: 'gender',
+          width: 100,
         },
         {
             title: 'Phone Number',
-            dataIndex: 'phone',
+            dataIndex: 'phone_number',
             width: 250,
-            sorter: (a, b) => a.phone.localeCompare(b.phone),
-            key: 'phone',
+            sorter: (a, b) => a.phone_number.localeCompare(b.phone_number),
+            key: 'phone_number',
             editable: true,
         },
         {
@@ -451,6 +452,10 @@ export default function Staffs(props) {
         },
     ];
 
+    const exportExcel = () => {
+
+    }
+
     const onTableChange = (pagination, filters, sorter, extra) => { };
 
     const checkOTP = (values) => {
@@ -472,9 +477,6 @@ export default function Staffs(props) {
         setOtpModalOpen(false);
     }
 
-    const exportExcel = () => {
-
-    }
     const mergedColumns = columns.map((col) => {
         if (!col.editable) {
           return col;
@@ -620,16 +622,30 @@ export default function Staffs(props) {
                     <Form form={form} component={false}>
                         <CustomTable
                             bordered
-                            columns={columns}
+                            // columns={columns}
                             dataSource={customers}
-                            onChange={onTableChange}
-                            columns={mergedColumns}
-                            components={{
-                                body: {
-                                cell: EditableCell,
-                                },
-                            }}
-                            rowClassName="editable-row"
+                            // onChange={onTableChange}
+                            columns={columns}
+                            // components={{
+                            //     body: {
+                            //     cell: EditableCell,
+                            //     },
+                            // }}
+                            // rowClassName="editable-row"
+                            // summary={(pageData) => {
+                            //   return (
+                            //     <>
+                            //       <Table.Summary.Row fixed>
+                            //         <Table.Summary.Cell index={0}>
+                            //           <div className="font-bebas tracking-wider">Total</div>
+                            //         </Table.Summary.Cell>
+                            //         <Table.Summary.Cell index={1}>
+                            //           <Text type="success" strong>{pageData.length}</Text>
+                            //         </Table.Summary.Cell>
+                            //       </Table.Summary.Row>
+                            //     </>
+                            //   );
+                          // }}
                         />
                     </Form>
                 </div>

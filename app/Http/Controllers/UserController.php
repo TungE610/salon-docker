@@ -135,7 +135,7 @@ class UserController extends Controller
                         'email' => $validated['email'],
                         'first_name' => $validated['first_name'],
                         'last_name' => $validated['last_name'],
-                        'phone' => $validated['phone'],
+                        'phone_number' => $validated['phone_number'],
                         'is_active' => $validated['is_active'],
                     ]
                 );

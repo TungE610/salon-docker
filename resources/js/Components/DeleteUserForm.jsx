@@ -33,7 +33,7 @@ const DeleteUserForm = () => {
             </header>
 
             <button
-                className="bg-red-500 text-white px-4 py-2 rounded"
+                className="bg-red-500 text-white px-4 py-2 rounded font-bold "
                 onClick={() => setShowModal(true)}
             >
                 Delete Account
@@ -41,7 +41,7 @@ const DeleteUserForm = () => {
 
             {showModal && (
                 <div className="modal">
-                    <form onSubmit={handleDeleteAccount} className="p-6">
+                    <form onSubmit={handleDeleteAccount} >
                         <h2 className="text-lg font-medium text-gray-900 dark:text-gray-100">
                             Are you sure you want to delete your account?
                         </h2>
@@ -64,18 +64,18 @@ const DeleteUserForm = () => {
                             {/* Add code to display input errors */}
                         </div>
 
-                        <div className="mt-6 flex justify-end">
+                        <div className="mt-6 flex justify-start">
                             <button
                                 type="button"
                                 onClick={() => setShowModal(false)}
-                                className="bg-gray-400 text-white px-4 py-2 rounded"
+                                className="bg-gray-400 text-white px-4 py-2 rounded font-bold "
                             >
                                 Cancel
                             </button>
 
                             <button
                                 type="submit"
-                                className="bg-red-500 text-white px-4 py-2 ml-3 rounded"
+                                className="bg-red-500 text-white px-4 py-2 ml-3 rounded font-bold"
                             >
                                 Delete Account
                             </button>

@@ -77,7 +77,7 @@ class RegisteredUserController extends Controller
                     'status' => $rejected_id,
                     'created_at' => now(),
                     'updated_at' => now(),
-                    // 'approved_by' => 1,
+                    // 'approved_by' => $request->approved_by,
                 ]
             );
         } catch (Exception $e) {

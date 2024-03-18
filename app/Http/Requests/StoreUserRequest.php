@@ -30,7 +30,7 @@ class StoreUserRequest extends FormRequest
             'first_name' => 'string|required|max:255',
             'last_name' => 'string|required|max:255',
             'email' => 'email|required|unique:users,email|max:255',
-            'phone' => 'string|required|unique:users,phone|max:30',
+            'phone_number' => 'string|required|unique:users,phone_number|max:30',
             'password' => ['required', Rules\Password::defaults()],
             'salon_role' => 'numeric|required|exists:salon_roles,id',
             'is_active' => 'numeric|required',

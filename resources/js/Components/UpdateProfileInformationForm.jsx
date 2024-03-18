@@ -100,10 +100,10 @@ const UpdateProfileInformationForm = ({ user, locale }) => {
                 </div>
 
                 <div className="flex items-center gap-4">
-                    <button type="submit" className="bg-sky-600 px-5 py-2 rounded hover:bg-slate-800 hover:text-white">{locale.save}</button>
+                    <button type="submit" className="bg-sky-600 text-white font-bold px-5 py-2 rounded hover:bg-slate-800 hover:text-white">{locale.save}</button>
 
                     {profileUpdated && (
-                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                        <p className="text-sm text-gray-600 dark:text-gray-400 m-0">
                             {locale.saved}
                         </p>
                     )}

@@ -29,6 +29,7 @@ export default function Authenticated({ auth, children, ...props }) {
     const [collapsed, setCollapsed] = useState(false);
     const authName = `${auth.user.first_name} ${auth.user.last_name}`;
     const systemRole = auth.user.system_role;
+    const displayRole = auth.user.salon_role ? auth.user.salon_role : auth.user.system_role;
 
     // const superAdminNavbarIems = [
     //     {
@@ -96,15 +97,15 @@ export default function Authenticated({ auth, children, ...props }) {
 
     // const navbarItem = systemRole === 'super admin' ? superAdminNavbarIems : (auth.user.salon_role === 'manager' ? salonManagerNavbarItem : staffNavbarItems);
 
-    const handleChange = (value) => {
-        localStorage.removeItem("locale");
-        localStorage.setItem("locale", value);
+    // const handleChange = (value) => {
+    //     localStorage.removeItem("locale");
+    //     localStorage.setItem("locale", value);
 
-        setSelectedLocale(value);
-        changeLocale(value);
+    //     setSelectedLocale(value);
+    //     changeLocale(value);
 
-        Inertia.get(route('locale', { lang: value } ));
-    };
+    //     Inertia.get(route('locale', { lang: value } ));
+    // };
 
     return (
         <LangProvider>
@@ -114,12 +115,13 @@ export default function Authenticated({ auth, children, ...props }) {
                         overflow: 'auto',
                         height: '100vh',
                         position: 'fixed',
+                        border: '1px solid #ddd'
                     }}
                     theme="light"
                     trigger={null} collapsible collapsed={collapsed}
                 >
                     <div className="dashboard-logo items-center">
-                        GoCut
+                        {collapsed ? 'G' : 'GoCut'}
                     </div>
                     <div className="absolute bottom-0 top-0 w-full">
                         <SideBarMenu />
@@ -153,28 +155,33 @@ export default function Authenticated({ auth, children, ...props }) {
                             }}
                         />
                         <div className="hidden sm:flex sm:items-center sm:ml-6">
-                            <div className="ml-3 relative">
+                            <div className="ml-3">
                                 <Dropdown>
                                     <Dropdown.Trigger>
-                                        <span className="inline-flex rounded-md">
+                                        <span className="h-full inline-flex rounded-md">
                                             <button
                                                 type="button"
-                                                className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150"
+                                                className="inline-flex items-start flex-col px-3 py-1 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150"
                                             >
-                                                {authName}
+                                                <div className='flex'>
+                                                    {authName}
 
-                                                <svg
-                                                    className="ml-2 -mr-0.5 h-4 w-4"
-                                                    xmlns="http://www.w3.org/2000/svg"
-                                                    viewBox="0 0 20 20"
-                                                    fill="currentColor"
-                                                >
-                                                    <path
-                                                        fillRule="evenodd"
-                                                        d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                                                        clipRule="evenodd"
-                                                    />
-                                                </svg>
+                                                    <svg
+                                                        className="ml-2 -mr-0.5 h-4 w-4"
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                        viewBox="0 0 20 20"
+                                                        fill="currentColor"
+                                                    >
+                                                        <path
+                                                            fillRule="evenodd"
+                                                            d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                                            clipRule="evenodd"
+                                                        />
+                                                    </svg>
+                                                </div>
+                                                <div className='flex text-xs text-[#000]'>
+                                                    {displayRole}
+                                                </div>
                                             </button>
                                         </span>
                                     </Dropdown.Trigger>

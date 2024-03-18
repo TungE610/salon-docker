@@ -108,14 +108,14 @@ export default function Welcome(props) {
                                 </div>
                             </div>
                         </div>
-                        <div className='bg-[#f4f5f5] h-3/4 sm:w-2/5 lg:w-1/3 border border-slate-400 rounded-xl py-4 px-6'>
-                            <ValidationErrors errors={errors} />
+                        <div className='bg-[#f4f5f5] h-min sm:w-2/5 lg:w-1/3 border border-slate-400 rounded-xl py-4 px-6'>
+                            {/* <ValidationErrors errors={errors} className="mb-1"/> */}
 
-                            <form className="pb-20" onSubmit={submit}>
+                            <form onSubmit={submit}>
                                 <input type='hidden' name='_token' value='{{ csrf_token() }}' />
 
                                 <div className="flex gap-3 justify-between">
-                                    <div className="mt-4 w-1/2">
+                                    <div className="mt-3 w-1/2">
                                         <Label forInput="firstName" value={lang.get('strings.First-Name')} />
 
                                         <Input
@@ -128,9 +128,10 @@ export default function Welcome(props) {
                                             handleChange={onHandleChange}
                                             required
                                         />
+                                        <p className='text-red-500 font-bold text-xs mt-2'>{errors['firstName']}</p>
                                     </div>
 
-                                    <div className="mt-4 w-1/2">
+                                    <div className="mt-3 w-1/2">
                                         <Label forInput="lastName" value={lang.get('strings.Last-Name')} />
 
                                         <Input
@@ -143,11 +144,12 @@ export default function Welcome(props) {
                                             handleChange={onHandleChange}
                                             required
                                         />
+                                        <p className='text-red-500 font-bold text-xs mt-2'>{errors['lastName']}</p>
                                     </div>
                                 </div>
                                 <div className="flex gap-3 justify-between">
 
-                                <div className="mt-4 w-1/2">
+                                    <div className="mt-2 w-1/2">
                                         <Label forInput="email" value="Email" />
 
                                         <Input
@@ -159,9 +161,10 @@ export default function Welcome(props) {
                                             handleChange={onHandleChange}
                                             required
                                         />
+                                        <p className='text-red-500 font-bold text-xs mt-2'>{errors['email']}</p>
                                     </div>
 
-                                    <div className="mt-4 w-1/2">
+                                    <div className="mt-2 w-1/2">
                                         <Label forInput="phoneNumber" value={lang.get('strings.Phone')} />
 
                                         <Input
@@ -173,11 +176,12 @@ export default function Welcome(props) {
                                             handleChange={onHandleChange}
                                             required
                                         />
+                                        <p className='text-red-500 font-bold text-xs mt-2'>{errors['phoneNumber']}</p>
                                     </div>
                                 </div>
                                 <div className="flex gap-3 justify-between">
 
-                                    <div className="mt-4 w-1/2">
+                                    <div className="mt-2 w-1/2">
                                         <Label forInput="password" value={lang.get('strings.Password')} />
 
                                         <Input
@@ -191,7 +195,7 @@ export default function Welcome(props) {
                                         />
                                     </div>
 
-                                    <div className="mt-4 w-1/2">
+                                    <div className="mt-2 w-1/2">
                                         <Label forInput="password_confirmation" value={lang.get('strings.Confirm-Password')} />
 
                                         <Input
@@ -204,8 +208,9 @@ export default function Welcome(props) {
                                         />
                                     </div>
                                 </div>
+                                <p className='text-red-500 font-bold text-xs mt-2'>{errors['password']}</p>
 
-                                <div className="mt-4">
+                                <div className="mt-2">
                                     <Label forInput="salonName" value={lang.get('strings.Salon-Name')}/>
 
                                     <Input
@@ -219,7 +224,7 @@ export default function Welcome(props) {
                                     />
                                 </div>
 
-                                <div className="mt-4">
+                                <div className="mt-2">
                                     <Label forInput="address" value={lang.get('strings.Address')}/>
 
                                     <Input
@@ -231,9 +236,10 @@ export default function Welcome(props) {
                                         handleChange={onHandleChange}
                                         required
                                     />
+                                    <p className='text-red-500 font-bold text-xs mt-2'>{errors['address']}</p>
                                 </div>
 
-                                <div className="mt-4 flex gap-x-4">
+                                <div className="mt-2 flex gap-x-4">
                                     <div className="w-1/2">
                                         <Label forInput="staffNumber" value={lang.get('strings.Staff-Number')} />
 
@@ -262,7 +268,7 @@ export default function Welcome(props) {
                                     </div>
                                 </div>
 
-                                <div className="mt-4">
+                                <div className="mt-2">
                                     <Label className="mb-3" forInput="registrationPackage" value={lang.get('strings.Registration-Package')} />
 
                                     <Select
@@ -279,7 +285,7 @@ export default function Welcome(props) {
                                         {lang.get('strings.Already-registered')}
                                     </Link>
 
-                                    <Button className="ml-4" processing={processing}>
+                                    <Button className="ml-4 bg-sky-900 border-2 border-sky-900 hover:bg-white hover:text-sky-900 text-white" processing={processing}>
                                         {lang.get('Register')}
                                     </Button>
                                 </div>

@@ -247,9 +247,9 @@ return [
     ],
 
     'registration_status' => [
-        1 => 'Waiting',
-        2 => 'Accepted',
-        3 => 'Rejected',
+        0 => 'Waiting',
+        1 => 'Accepted',
+        2 => 'Rejected',
     ],
 
     'user_active' => [
@@ -282,6 +282,12 @@ return [
     'bill_status' => [
         0 => 'Unpaid',
         1 => 'Paid',
+    ],
+    
+    'package' => [
+        1 => 'small',
+        2 => 'medium',
+        3 => 'big',
     ],
 
     'warning_product_run_out' => 10,
