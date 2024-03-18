@@ -83,7 +83,7 @@ export default function Login({ status, canResetPassword }) {
                         </Link>
                     )}
 
-                    <Button className="ml-4" processing={processing}>
+                    <Button className="ml-4 bg-sky-900 border-2 border-sky-900 hover:bg-white hover:text-sky-900 text-white" processing={processing}>
                         {lang.get('strings.Login')}
                     </Button>
                 </div>

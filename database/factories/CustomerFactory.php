@@ -19,6 +19,7 @@ class CustomerFactory extends Factory
             'full_name' => $this->faker->name(),
             'dob' => $this->faker->date(),
             'phone_number' => $this->faker->phoneNumber(),
+            'gender' => $this->faker->randomElement(['male', 'female', 'others']),
             'address' => $this->faker->address(),
             'is_active' => true,
             'created_at' => now(),

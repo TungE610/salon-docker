@@ -44,16 +44,17 @@ class UserFactory extends Factory
                 ]
             );
         }
+        
         $systemRoles = SystemRole::all();
         $systemRoleId = $systemRoles->random()->id;
         return [
             'system_role_id' => $systemRoleId,
             'first_name' => $this->faker->name(),
             'last_name' => $this->faker->name(),
-            'phone'=> $this->faker->phoneNumber(),
+            'phone_number'=> $this->faker->phoneNumber(),
             'email' => $this->faker->unique()->safeEmail(),
             'email_verified_at' => now(),
-            'password' => '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', // password
+            'password' => Hash::make('12345678'), // password
             'is_active' => true,
             'remember_token' => Str::random(10),
         ];

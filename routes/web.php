@@ -53,12 +53,20 @@ Route::middleware(['superAdmin'])->group(
         )->name('registrations.index');
 
         Route::put(
-            '/registrations/{registration}',
+            '/registrations/reject/{registration}',
             [
                 RegistrationController::class,
                 'reject',
             ]
         )->name('registrations.reject');
+        
+        Route::put(
+            '/registrations/note/{registration}',
+            [
+                RegistrationController::class,
+                'note',
+            ]
+        )->name('registrations.note');
 
         Route::resource('salons', SalonController::class);
         Route::resource('users', UserController::class);

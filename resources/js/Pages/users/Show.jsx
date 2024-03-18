@@ -85,7 +85,7 @@ export default function Show(props) {
                                         {lang.get('strings.Phone')}:
                                     </dt>
                                     <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                                        {user.phone}
+                                        {user.phone_number}
                                     </dd>
                                 </div>
                                 <div className="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">

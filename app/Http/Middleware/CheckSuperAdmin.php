@@ -19,6 +19,7 @@ class CheckSuperAdmin
     {
         $user = auth()->user();
 
+        // dd($user->phone_number);
         if ($user && SystemRole::find($user->system_role_id)->name == 'super admin') {
             return $next($request);
         }

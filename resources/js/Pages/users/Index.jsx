@@ -19,7 +19,7 @@ export default function Users(props) {
     useEffect(() => {
         setUsers(props.users.filter(item => (
             item.id.toString().includes(searchValue.toString()) ||
-            item.phone.toLowerCase().includes(searchValue.toLowerCase()) ||
+            item.phone_number.toLowerCase().includes(searchValue.toLowerCase()) ||
             item.email.toLowerCase().includes(searchValue.toLowerCase()) ||
             item.first_name.toLowerCase().includes(searchValue.toLowerCase()) ||
             item.last_name.toLowerCase().includes(searchValue.toLowerCase())

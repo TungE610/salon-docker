@@ -27,7 +27,7 @@ class CreateRegistrationsTable extends Migration
             $table->tinyInteger('status')->default(0);
             $table->foreignId('package_id')->constrained('packages');
             $table->timestamp('approved_at')->nullable();
-            $table->integer('approved_by', false, true);
+            $table->foreignId('approved_by')->nullable()->constrained('users');
             $table->timestamps();
         });
     }

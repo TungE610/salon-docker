@@ -43,8 +43,8 @@ class AuthenticatedSessionController extends Controller
         $request->session()->regenerate();
 
         $systemRoleId = User::find($userId)->system_role_id;
-
-        if (SystemRole::find($systemRoleId)->name == 'super admin') {
+        
+        if (SystemRole::find($systemRoleId)->name === 'super admin') {
             return redirect()->route('registrations.index');
         }
 

@@ -1,6 +1,5 @@
 import {useState} from 'react';
-import { Table, Typography } from 'antd';
-const { Text } = Typography;
+import { Table } from 'antd';
 import styled from 'styled-components';
 
 const MyTable = styled(Table)`
@@ -48,8 +47,8 @@ const EditableCell = ({
 export default function CustomTable(props) {
     const [selectedRowKeys, setSelectedRowKeys] = useState([]);
     const onSelectChange = (newSelectedRowKeys) => {
-      console.log('selectedRowKeys changed: ', newSelectedRowKeys);
       setSelectedRowKeys(newSelectedRowKeys);
+	  props.getSelectedRows(newSelectedRowKeys);
     };
     const rowSelection = {
       selectedRowKeys,
@@ -94,26 +93,6 @@ export default function CustomTable(props) {
             <MyTable {...props} 
                 pagination={{ defaultPageSize: 10, showSizeChanger: true, pageSizeOptions: ['10', '20', '30'], showTotal: (total, range) => `${range[0]}-${range[1]} of ${total} items`, showQuickJumper: true}}
                 rowSelection={rowSelection}
-                summary={(pageData) => {
-                    let totalBorrow = 0;
-                    let totalRepayment = 0;
-                    pageData.forEach(({ borrow, repayment }) => {
-                      totalBorrow += borrow;
-                      totalRepayment += repayment;
-                    });
-                    return (
-                      <>
-                        <Table.Summary.Row fixed>
-                          <Table.Summary.Cell index={0}>
-                            <div className="font-bebas tracking-wider">Total</div>
-                          </Table.Summary.Cell>
-                          <Table.Summary.Cell index={1}>
-                            <Text type="success" strong>{pageData.length}</Text>
-                          </Table.Summary.Cell>
-                        </Table.Summary.Row>
-                      </>
-                    );
-                  }}
             />
         </>
     )

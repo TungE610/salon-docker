@@ -19,7 +19,7 @@ class CreateInitialAdminAccount extends Seeder
             'first_name' => 'Super',
             'last_name' => 'Admin',
             'system_role_id' => 1,
-            'phone' => '01234556789',
+            'phone_number' => '01234556789',
             'email' => 'superadmin@gmail.com',
             'password' => Hash::make('12345678'),
             'is_active' => true,

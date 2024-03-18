@@ -25,7 +25,7 @@ export default function Dashboard(props) {
     const [instantForm] = Form.useForm();
     const [customerForm] = Form.useForm();
     const [quantityForm] = Form.useForm();
-    const customers = props[0].customers.map(customer => { return { label: customer.phone, value: customer.id } });
+    const customers = props[0].customers.map(customer => { return { label: customer.phone_number, value: customer.id } });
     const { RangePicker } = DatePicker;
     const [today, setToday] = useState(props[0].today);
     const [firstDayInMonth, setFirstDayInMonth] = useState(props[0].firstDayInMonth);
