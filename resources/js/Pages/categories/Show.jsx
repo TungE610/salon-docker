@@ -1,15 +1,16 @@
-import React, { useState, useEffect } from 'react';
-import { Input, Button, notification, Modal, Tag, Tooltip } from 'antd';
-import { EditOutlined, DeleteOutlined, PlusCircleOutlined, EyeOutlined, MinusCircleOutlined } from '@ant-design/icons';
+import React, { useState, useEffect, useRef } from 'react';
+import { Input, Button, notification, Modal, Tag, Tooltip, Space, Table, Typography } from 'antd';
+import { EditOutlined, DeleteOutlined, PlusCircleOutlined, EyeOutlined, MinusCircleOutlined, SearchOutlined } from '@ant-design/icons';
 import 'antd/dist/antd.css';
+import Highlighter from 'react-highlight-words';
 import { useLang } from '../../Context/LangContext';
 import Authenticated from '@/Layouts/Authenticated';
 import { Head } from '@inertiajs/inertia-react';
 import { Inertia } from '@inertiajs/inertia';
 import CustomTable from '@/Components/CustomeTable';
+const { Text } = Typography;
 
 export default function DetailCategory (props) {
-    const [isEditting, setIsEditting] = useState(false);
     const { lang } = useLang();
     const { Search } = Input;
 
@@ -18,7 +19,112 @@ export default function DetailCategory (props) {
     const [searchValue, setSearchValue] = useState('');
     const [deletedProductId, setDeletedProductId] = useState(0);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-
+    const [searchText, setSearchText] = useState('');
+    const [searchedColumn, setSearchedColumn] = useState('');
+    const searchInput = useRef(null);
+    const handleSearch = (selectedKeys, confirm, dataIndex) => {
+      confirm();
+      setSearchText(selectedKeys[0]);
+      setSearchedColumn(dataIndex);
+    };
+    const handleReset = (clearFilters) => {
+      clearFilters();
+      setSearchText('');
+    };
+    const getColumnSearchProps = (dataIndex) => ({
+      filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters, close }) => (
+        <div
+          style={{
+            padding: 8,
+          }}
+          onKeyDown={(e) => e.stopPropagation()}
+        >
+          <Input
+            ref={searchInput}
+            placeholder={`Search ${dataIndex}`}
+            value={selectedKeys[0]}
+            onChange={(e) => setSelectedKeys(e.target.value ? [e.target.value] : [])}
+            onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
+            style={{
+              marginBottom: 8,
+              display: 'block',
+            }}
+          />
+          <Space>
+            <Button
+              type="primary"
+              onClick={() => handleSearch(selectedKeys, confirm, dataIndex)}
+              icon={<SearchOutlined />}
+              size="small"
+              style={{
+                width: 90,
+              }}
+            >
+              Search
+            </Button>
+            <Button
+              onClick={() => clearFilters && handleReset(clearFilters)}
+              size="small"
+              style={{
+                width: 90,
+              }}
+            >
+              Reset
+            </Button>
+            <Button
+              type="link"
+              size="small"
+              onClick={() => {
+                confirm({
+                  closeDropdown: false,
+                });
+                setSearchText(selectedKeys[0]);
+                setSearchedColumn(dataIndex);
+              }}
+            >
+              Filter
+            </Button>
+            <Button
+              type="link"
+              size="small"
+              onClick={() => {
+                close();
+              }}
+            >
+              close
+            </Button>
+          </Space>
+        </div>
+      ),
+      filterIcon: (filtered) => (
+        <SearchOutlined
+          style={{
+            color: filtered ? '#1677ff' : undefined,
+          }}
+        />
+      ),
+      onFilter: (value, record) =>
+        record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
+      onFilterDropdownOpenChange: (visible) => {
+        if (visible) {
+          setTimeout(() => searchInput.current?.select(), 100);
+        }
+      },
+      render: (text) =>
+        searchedColumn === dataIndex ? (
+          <Highlighter
+            highlightStyle={{
+              backgroundColor: '#ffc069',
+              padding: 0,
+            }}
+            searchWords={[searchText]}
+            autoEscape
+            textToHighlight={text ? text.toString() : ''}
+          />
+        ) : (
+          text
+        ),
+    });
     useEffect(() => {
         setProducts(props[0].category.products.filter(item => (
             item.id.toString().includes(searchValue.toString()) ||
@@ -32,27 +138,50 @@ export default function DetailCategory (props) {
         {
             title: 'ID',
             dataIndex: 'id',
+            ...getColumnSearchProps('id'),
         },
         {
             title: lang.get('strings.Name'),
             dataIndex: 'name',
+            ...getColumnSearchProps('name'),
         },
         {
             title: lang.get('strings.Unit'),
             dataIndex: 'unit',
+            ...getColumnSearchProps('unit'),
+            filters: [
+                {
+                  text: 'Joe',
+                  value: 'Joe',
+                },
+                {
+                  text: 'Jim',
+                  value: 'Jim',
+                },
+                {
+                  text: 'Submenu',
+                  value: 'Submenu',
+                },
+            ],
+            onFilter: (value, record) => record.unit === value,
         },
         {
             title: lang.get('strings.Cost-Per-Unit'),
             dataIndex: 'cost',
+            sorter: (a, b) => a.cost - b.cost,
+            ...getColumnSearchProps('cost'),
         },
         {
             title: lang.get('strings.Description'),
             dataIndex: 'description',
-            align: 'center'
+            align: 'center',
+            width: 600,
+            ...getColumnSearchProps('description'),
         },
         {
             title: lang.get('strings.Quantity'),
             dataIndex: 'quantity',
+            sorter: (a, b) => a.quantity - b.quantity,
         },
         {
             title: lang.get('strings.Action'),
@@ -212,84 +341,53 @@ export default function DetailCategory (props) {
             >
                 <p className="font-semibold text-xl text-rose-600 leading-tight">Are you sure to delete this product ?</p>
             </Modal>
-            <div className="py-12">
-                <div className='sm:px-6 lg:px-8 w-full'>
-                    <h2 className='font-semibold text-2xl text-gray-800 leading-tight'>{lang.get('strings.Detail-Category')}</h2>
-                </div> 
-                <div className="bg-white w-full shadow overflow-hidden sm:rounded-lg">
-                    <div className="px-4 py-7 sm:px-6">
-                        <div className='flex justify-between'>
-                            <h3 className="text-2xl leading-6 font-semibold text-sky-900 max-w-2xl">
-                                {category.name}
-                            </h3>
+            <div className="py-6">
+                <div className='sm:px-6 lg:px-8 w-full flex justify-between items-start'>
+                    <h2 className='font-semibold font-bebas tracking-wider text-2xl text-gray-800 leading-tight'>Category Detail: {category.name}</h2>
+                    <div className="px-4 sm:px-6">
+                        <div className='flex justify-end'>
                             <div className='flex space-x-4'>
                                 <a href={route('categories.edit', {category : category.id})}>
-                                    <Button type="primary" shape="round" icon={<EditOutlined />} size={'large'} onClick={editCategory}>
-                                        {lang.get('strings.Edit')}
+                                    <Button shape="round" size={'large'} onClick={editCategory} style={{ backgroundColor: '#1C274C', color: '#fff', fontWeight: 'bold', fontSize: 'large'}}>
+                                        <div className="flex items-center gap-3 font-bebas tracking-wider text-lg">
+                                            <EditOutlined />
+                                            {lang.get('strings.Edit')}
+                                        </div>
                                     </Button>
                                 </a>
-                                <Button danger type="primary" shape="round" icon={<DeleteOutlined />} size={'large'} onClick={() => showDeleteModal(category)} >
-                                    {lang.get('strings.Delete')}
+                                <Button danger shape="round" size={'large'} onClick={() => showDeleteModal(category)} style={{ backgroundColor: 'rgba(245, 39, 39, 0.79)', color: '#fff', fontWeight: 'bold', fontSize: 'large'}}>
+                                    <div className="flex items-center gap-3 font-bebas tracking-wider text-lg">
+                                        <DeleteOutlined />
+                                        {lang.get('strings.Delete')}
+                                    </div>
                                 </Button>
                             </div>
                         </div>
                     </div>
-                    <div class="border-t border-gray-200">
-                        <dl>
-                            <div className="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                                <dt className="text-md font-medium text-gray-500">
-                                    <b>{lang.get('strings.ID')}:</b>
-                                </dt>
-                                <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                                    {category.id}
-                                </dd>
-                            </div>
-                            <div className="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                                <dt className="text-md font-medium text-gray-500">
-                                    <b>{lang.get('strings.Active')}:</b>
-                                </dt>
-                                <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                                    {category.is_active}
-                                </dd>
-                            </div>
-                            <div className="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                                <dt className="text-md font-medium text-gray-500">
-                                    <b>{lang.get('strings.Product-Type')}:</b>
-                                </dt>
-                                <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                                    {category.product_type}
-                                </dd>
-                            </div>
-                            <div className="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                                <dt className="text-md font-medium text-gray-500">
-                                    <b>{lang.get('strings.Product-Number')}:</b>
-                                </dt>
-                                <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                                    {category.product_number}
-                                </dd>
-                            </div>
-                        </dl>
-                    </div>
+                </div> 
+                <div className="bg-white w-full overflow-hidden mt-16">
                     <div className="px-4 py-7 sm:px-6">
                         <div className='flex justify-between'>
-                            <h3 className="text-2xl leading-6 font-semibold text-sky-900 max-w-2xl">
-                                {lang.get('strings.Products')}
+                            <h3 className="font-semibold font-bebas tracking-wider text-2xl text-gray-800 leading-tight ml-2" >
+                                {lang.get('strings.Products')} List
                             </h3>
-                            <div className='flex space-x-4'>
+                            <div className='flex items-center space-x-4'>
                                 <Button
-                                    icon={<PlusCircleOutlined />}
-                                    type="primary"
                                     shape="round"
                                     size={"large"}
                                     onClick={createProduct}
+                                    style={{ backgroundColor: '#1C274C', color: '#fff', fontWeight: 'bold', fontSize: 'large'}}
                                 >
-                                    {lang.get('strings.Create-Product')}
+                                    <div className="flex items-center gap-3 font-bebas tracking-wider text-lg">
+                                        <PlusCircleOutlined />
+                                        {lang.get('strings.Create-Product')}
+                                    </div>
                                 </Button>
                                 <Search placeholder="input id, name, description or unit"
                                     onChange={searchChangeHandler}
                                     enterButton
                                     bordered
-                                    size="large"
+                                    size="medium"
                                     allowClear
                                     style={{
                                         width: 304,
@@ -298,18 +396,24 @@ export default function DetailCategory (props) {
                             </div>
                         </div>
                     </div>
-                    <div class="border-t border-gray-200">
+                    <div >
                         <div className="max-w-full mx-auto sm:px-6 lg:px-8">
                             <CustomTable
-                                bordered
                                 columns={columns}
                                 dataSource={products}
                                 onChange={onTableChange}
-                                onRow={(record, index) => ({
-                                    style: {
-                                        background: record.is_active === 'True' ? '#e6f4ff' : '#fff1f0',
-                                    }
-                                })}
+                                summary={() => {
+                                    return (
+                                      <>
+                                        <Table.Summary.Row>
+                                          <Table.Summary.Cell index={0}>Total</Table.Summary.Cell>
+                                          <Table.Summary.Cell index={1}>
+                                            <Text type="success">{products.length}</Text>
+                                          </Table.Summary.Cell>
+                                        </Table.Summary.Row>
+                                      </>
+                                    );
+                                }}
                             />
                         </div>
                     </div>

@@ -28,7 +28,7 @@ export default function Create(props) {
 
     const layout = {
         labelCol: {
-            span: 6,
+            span: 1,
         },
         wrapperCol: {
             span: 12,
@@ -36,7 +36,7 @@ export default function Create(props) {
     };
     const tailLayout = {
         wrapperCol: {
-            offset: 6,
+            offset: 1,
             span: 12,
         },
     };
@@ -73,13 +73,11 @@ export default function Create(props) {
         >
             <Head title="Edit User" />
 
-            <div className="py-12">
+            <div className="py-6">
                 <div className="w-full mx-auto sm:px-6 lg:px-8">
-                    <div className="mb-8 bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                        <h3 className="text-2xl leading-6 font-medium text-gray-900">
-                            {lang.get('strings.Edit-Category')}
-                        </h3>
-                    </div>
+                    <h3 className='font-semibold font-bebas tracking-wider text-2xl text-gray-800 leading-tight mb-12'>
+                        {lang.get('strings.Edit-Category')}
+                    </h3>
                     <Form {...layout} form={form} name="control-hooks" onFinish={onFinish}>
                         <Form.Item
                             name="id"

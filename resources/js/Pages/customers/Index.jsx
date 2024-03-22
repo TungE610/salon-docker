@@ -4,51 +4,16 @@ import { Head, useForm } from '@inertiajs/inertia-react';
 import { useLang } from '../../Context/LangContext';
 import CustomTable from '@/Components/CustomeTable';
 import Highlighter from 'react-highlight-words';
-import { Checkbox, Input, Modal, notification, Button, Form, Space, Typography, Popconfirm } from 'antd';
+import { Checkbox, Input, Modal, notification, Button, Form, Space, Typography, Popconfirm, Table } from 'antd';
 import { EditOutlined, EyeOutlined, DeleteOutlined, ExclamationCircleOutlined, PlusCircleOutlined, ExportOutlined, ImportOutlined, SearchOutlined } from '@ant-design/icons';
 import { Inertia } from '@inertiajs/inertia'
 import 'antd/dist/antd.css';
 import {CSVLink} from "react-csv"
 
-const EditableCell = ({
-    editing,
-    dataIndex,
-    title,
-    inputType,
-    record,
-    index,
-    children,
-    ...restProps
-  }) => {
-    const inputNode = inputType === 'number' ? <InputNumber /> : <Input />;
-    return (
-      <td {...restProps}>
-        {editing ? (
-          <Form.Item
-            name={dataIndex}
-            style={{
-              margin: 0,
-            }}
-            rules={[
-              {
-                required: true,
-                message: `Please Input ${title}!`,
-              },
-            ]}
-          >
-            {inputNode}
-          </Form.Item>
-        ) : (
-          children
-        )}
-      </td>
-    );
-  };
-
 export default function Staffs(props) {
 
     const initialData = props[0].customers.map(customer => { return {key: customer.id, ...customer, created_at: customer.created_at.replace("T", " ").replace("Z", "").replace(/\.?0+$/, '').replace(/\.$/, '')}})
-    const [customers, setCustomers] = useState(props[0].customers);
+    const [customers, setCustomers] = useState(initialData);
     const [phoneNumber, setPhoneNumber] = useState('');
     const [name, setName] = useState('');
     const [isActive, setIsActive] = useState(false);
@@ -64,7 +29,6 @@ export default function Staffs(props) {
     const searchInput = useRef(null);
     const [searchText, setSearchText] = useState('');
     const [searchedColumn, setSearchedColumn] = useState('');
-    const { Text } = Typography;
 
     useEffect(() => {
         setCustomers(props[0].customers.filter(item => (
@@ -108,7 +72,7 @@ export default function Staffs(props) {
             handleEditOk(values);
         } else {
             setPhoneNumber(values.phone);
-            setName(values.name);
+            setName(values.full_name);
             setIsActive(values.is_active);
             Inertia.post(route('customers.sendOTP'), { phoneNumber: values.phone }, {
                 onError: () => { },
@@ -145,7 +109,7 @@ export default function Staffs(props) {
                 <>
                     <h2 className="text-rose-600">{lang.get('strings.Message-Confirm-Delete')}</h2>
                     <h4>
-                        <b>{lang.get('strings.Customer-Name')}:</b> {record.name}
+                        <b>{lang.get('strings.Customer-Name')}:</b> {record.full_name}
                     </h4>
                     <h4>
                         <b>{lang.get('strings.Customer-Phone')}:</b> {record.phone}
@@ -198,8 +162,8 @@ export default function Staffs(props) {
 
     const edit = (record) => {
       form.setFieldsValue({
-        name: '',
-        age: '',
+        full_name: '',
+        // age: '',
         address: '',
         ...record,
       });
@@ -360,10 +324,15 @@ export default function Staffs(props) {
         {
             title: 'Fullname',
             dataIndex: 'full_name',
-            sorter: (a, b) => a.full_name.localeCompare(b.full_name),
+            // sorter: (a, b) => a.full_name.localeCompare(b.full_name),
             key: 'full_name',
-            editable: true,
             ...getColumnSearchProps('full_name'),
+        },
+        {
+          title: 'Dob',
+          dataIndex: 'dob',
+          key: 'dob',
+          width: 130,
         },
         {
           title: 'Gender',
@@ -409,23 +378,8 @@ export default function Staffs(props) {
             align: 'center',
             width: 150,
             render: (text, record) => {
-                const editable = isEditing(record);
 
-                return editable ? (
-                    <span>
-                      <Typography.Link
-                        onClick={() => save(record.key)}
-                        style={{
-                          marginRight: 8,
-                        }}
-                      >
-                        Save
-                      </Typography.Link>
-                      <Popconfirm title="Sure to cancel?" onConfirm={cancel}>
-                        <a>Cancel</a>
-                      </Popconfirm>
-                    </span>
-                  ) : (
+                return (
                     <div className="flex gap-3 justify-center">
                         <Button icon={  <EditOutlined style={{ fontSize: 17, color: '#fff' }} onClick={
                             () => {
@@ -459,7 +413,7 @@ export default function Staffs(props) {
     const onTableChange = (pagination, filters, sorter, extra) => { };
 
     const checkOTP = (values) => {
-        Inertia.post(route('customers.checkOTP'), { OTP: values.OTP, phoneNumber, name, isActive: isActive }, {
+        Inertia.post(route('customers.checkOTP'), { OTP: values.OTP, phoneNumber, full_name, isActive: isActive }, {
             onSuccess: (response) => {
                 openNotification('success',
                     lang.get('strings.Successfully-Created'),
@@ -476,22 +430,6 @@ export default function Staffs(props) {
     const otpModalClose = () => {
         setOtpModalOpen(false);
     }
-
-    const mergedColumns = columns.map((col) => {
-        if (!col.editable) {
-          return col;
-        }
-        return {
-          ...col,
-          onCell: (record) => ({
-            record,
-            inputType: col.dataIndex === 'age' ? 'number' : 'text',
-            dataIndex: col.dataIndex,
-            title: col.title,
-            editing: isEditing(record),
-          }),
-        };
-      });
 
     return (
         <Authenticated
@@ -619,35 +557,11 @@ export default function Staffs(props) {
                     </Modal>
                 </div>
                 <div className="max-w-full mx-auto sm:px-6 lg:px-8">
-                    <Form form={form} component={false}>
-                        <CustomTable
-                            bordered
-                            // columns={columns}
-                            dataSource={customers}
-                            // onChange={onTableChange}
-                            columns={columns}
-                            // components={{
-                            //     body: {
-                            //     cell: EditableCell,
-                            //     },
-                            // }}
-                            // rowClassName="editable-row"
-                            // summary={(pageData) => {
-                            //   return (
-                            //     <>
-                            //       <Table.Summary.Row fixed>
-                            //         <Table.Summary.Cell index={0}>
-                            //           <div className="font-bebas tracking-wider">Total</div>
-                            //         </Table.Summary.Cell>
-                            //         <Table.Summary.Cell index={1}>
-                            //           <Text type="success" strong>{pageData.length}</Text>
-                            //         </Table.Summary.Cell>
-                            //       </Table.Summary.Row>
-                            //     </>
-                            //   );
-                          // }}
-                        />
-                    </Form>
+                    <CustomTable
+                      bordered
+                      columns={columns} // Use mergedColumns instead of columns
+                      dataSource={initialData}
+                  />
                 </div>
             </div>
         </Authenticated>

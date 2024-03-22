@@ -37,7 +37,6 @@
     color: #1C274C;
     padding: 0 10px;
     text-align: center;
-    border-bottom: 1px solid #ccc;
 }
 
 .big-logo {
@@ -169,3 +168,33 @@
     min-width: 70px!important;
     max-width: 70px!important;
   }
+
+  .ant-select-selection-item[title="Prepare"] {
+    color: #ffaa00!important;
+    font-weight: bold;
+  }
+  .ant-select-selection-item[title="In Process"] {
+    color: #44bcec!important;
+    font-weight: bold;
+  }
+  .ant-select-selection-item[title="Done"] {
+    color: #338140!important;
+    font-weight: bold;
+  }
+  .ant-select-selection-item[title="Cancel"] {
+    color: #fb3535!important;
+    font-weight: bold;
+  }
+
+  .rbc-calendar {
+    min-height: 700px;
+}
+
+.rbc-header {
+  height: 25px!important;
+  background-color: rgba(31, 104, 158, 0.37)!important;
+}
+
+.rbc-time-slot {
+  min-height: 40px;
+}

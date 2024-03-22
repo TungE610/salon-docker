@@ -5,6 +5,8 @@ import { render } from 'react-dom';
 import { createInertiaApp } from '@inertiajs/inertia-react';
 import { InertiaProgress } from '@inertiajs/progress';
 import { LangProvider } from './Context/LangContext';
+import 'react-big-calendar/lib/css/react-big-calendar.css';
+
 import 'antd/dist/antd.css';
 
 const appName = window.document.getElementsByTagName('title')[0]?.innerText || 'Laravel';
