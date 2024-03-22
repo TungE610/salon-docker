@@ -15,6 +15,7 @@ use App\Http\Controllers\StaffController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\SuperAdminDashboardController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\BillController;
 use App\Http\Controllers\TwilioSMSController;
@@ -69,6 +70,15 @@ Route::middleware(['superAdmin'])->group(
         )->name('registrations.note');
 
         Route::resource('salons', SalonController::class);
+
+        Route::get(
+            '/salons/{salon}/staffs',
+            [
+                SalonController::class,
+                'staffs',
+            ]
+        )->name('salons.staffs');
+
         Route::resource('users', UserController::class);
     }
 );
@@ -87,6 +97,11 @@ Route::middleware(['auth', 'verified', 'salonManager'])->group(function () {
 
     Route::put('/products/{product}/inactive', [ProductController::class, 'inactive'])->name('products.inactive');
 });
+
+Route::middleware(['auth', 'verified', 'superAdmin'])->group(function () {
+    Route::get('/admin-dashboard', [SuperAdminDashboardController::class, 'index'])->name('admin.dashboard');
+});
+
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('/orders', OrderController::class);

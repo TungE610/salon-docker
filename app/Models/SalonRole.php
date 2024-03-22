@@ -17,6 +17,6 @@ class SalonRole extends Model
 
     public function users(): BelongsToMany
     {
-        return $this->belongsToMany(User::class);
+        return $this->belongsToMany(User::class, 'salon_user', 'salon_role_id', 'user_id');
     }
 }

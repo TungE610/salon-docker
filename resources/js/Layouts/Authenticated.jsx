@@ -4,21 +4,10 @@ import ResponsiveNavLink from '@/Components/ResponsiveNavLink';
 import { Select, Button, Badge } from 'antd';
 import { LangProvider, useLang } from '../Context/LangContext';
 import {
-    ShopOutlined,
     MenuUnfoldOutlined,
     MenuFoldOutlined,
-    FileTextOutlined,
-    ProjectOutlined,
-    CalendarOutlined,
-    UserOutlined,
-    ExperimentOutlined,
-    AppstoreOutlined,
-    NotificationOutlined
 } from '@ant-design/icons';
-import { Layout, Menu } from 'antd';
-import { router } from '@inertiajs/react';
-import { Inertia } from "@inertiajs/inertia";
-import { Link } from '@inertiajs/inertia-react';
+import { Layout } from 'antd';
 import SideBarMenu from '../Components/SideBarMenu';
 const { Header, Content, Sider } = Layout;
 
@@ -28,7 +17,6 @@ export default function Authenticated({ auth, children, ...props }) {
     const [selectedLocale, setSelectedLocale] = useState(lang.getLocale());
     const [collapsed, setCollapsed] = useState(false);
     const authName = `${auth.user.first_name} ${auth.user.last_name}`;
-    const systemRole = auth.user.system_role;
     const displayRole = auth.user.salon_role ? auth.user.salon_role : auth.user.system_role;
 
     // const superAdminNavbarIems = [
@@ -120,11 +108,11 @@ export default function Authenticated({ auth, children, ...props }) {
                     theme="light"
                     trigger={null} collapsible collapsed={collapsed}
                 >
-                    <div className="dashboard-logo items-center">
+                    <div className="dashboard-logo items-center border-0">
                         {collapsed ? 'G' : 'GoCut'}
                     </div>
                     <div className="absolute bottom-0 top-0 w-full">
-                        <SideBarMenu />
+                        <SideBarMenu auth={auth}/>
                     </div>
                 </Sider>
                 <Layout

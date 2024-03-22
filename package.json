@@ -33,9 +33,12 @@
     },
     "dependencies": {
         "@ant-design/charts": "^1.4.2",
+        "@babel/runtime": "^7.24.1",
         "antd": "^4.24.3",
         "lang.js": "^1.1.14",
+        "moment": "^2.30.1",
         "postcss-cli": "^8.1.0",
+        "react-big-calendar": "^1.11.2",
         "react-csv": "^2.2.2",
         "react-highlight-words": "^0.20.0",
         "react-to-print": "^2.15.1",

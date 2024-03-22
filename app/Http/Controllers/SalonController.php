@@ -122,12 +122,11 @@ class SalonController extends Controller
      */
     public function show(Salon $salon)
     {
-        $salon = Salon::with(['users','customers','package'])->find($salon->id);
         if ($salon) {
+            $staffs = $salon->users()->with('salonRoles')->get();
+            
             return Inertia::render('salons/Show', [
-                [
-                    'salon' => $this->aggregateSalonInformation($salon),
-                ],
+                'staffs' => $staffs,
             ]);
         }
     }
@@ -233,7 +232,7 @@ class SalonController extends Controller
 
     private function getAllSalon()
     {
-        $allSalons = Salon::with(['users','customers','package'])->get();
+        $allSalons = Salon::with(['users','customers'])->get();
         foreach ($allSalons as $salon) {
             $salon = clone $this->aggregateSalonInformation($salon);
         }
@@ -246,8 +245,8 @@ class SalonController extends Controller
         $numStaffs = count($salon->users);
         $numCustomers = count($salon->customers);
         $salon->num_staffs = $numStaffs;
-        $salon->num_customers = $numCustomers;
         $salon->is_active = config('app.salon_active')[$salon->is_active];
+        $salon->package = config('app.package')[$salon->package_id];
         $salon->created_time = Carbon::create($salon->created_at)->format('d/m/y H:i');
         return $salon;
     }

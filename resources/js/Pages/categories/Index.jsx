@@ -1,11 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Authenticated from '@/Layouts/Authenticated';
 import { Head } from '@inertiajs/inertia-react';
 import { useLang } from '../../Context/LangContext';
 import CustomTable from '@/Components/CustomeTable';
-import { Input, Modal, notification, Tag, Button, Tooltip } from 'antd';
-import { EditOutlined, EyeOutlined, MinusCircleOutlined, PlusCircleOutlined, DeleteOutlined} from '@ant-design/icons';
-import { Inertia } from '@inertiajs/inertia'
+import { Input, Modal, notification, Tag, Button, Tooltip, Space, Badge, Table, Typography } from 'antd';
+import { EditOutlined, EyeOutlined, PlusCircleOutlined, DeleteOutlined, SearchOutlined} from '@ant-design/icons';
+import { Inertia } from '@inertiajs/inertia';
+import Highlighter from 'react-highlight-words';
+const { Text } = Typography;
+
 import 'antd/dist/antd.css';
 
 export default function Categories(props) {
@@ -16,7 +19,112 @@ export default function Categories(props) {
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const { lang } = useLang();
     const { Search } = Input;
-
+    const [searchText, setSearchText] = useState('');
+    const [searchedColumn, setSearchedColumn] = useState('');
+    const searchInput = useRef(null);
+    const handleSearch = (selectedKeys, confirm, dataIndex) => {
+      confirm();
+      setSearchText(selectedKeys[0]);
+      setSearchedColumn(dataIndex);
+    };
+    const handleReset = (clearFilters) => {
+      clearFilters();
+      setSearchText('');
+    };
+    const getColumnSearchProps = (dataIndex) => ({
+      filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters, close }) => (
+        <div
+          style={{
+            padding: 8,
+          }}
+          onKeyDown={(e) => e.stopPropagation()}
+        >
+          <Input
+            ref={searchInput}
+            placeholder={`Search ${dataIndex}`}
+            value={selectedKeys[0]}
+            onChange={(e) => setSelectedKeys(e.target.value ? [e.target.value] : [])}
+            onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
+            style={{
+              marginBottom: 8,
+              display: 'block',
+            }}
+          />
+          <Space>
+            <Button
+              type="primary"
+              onClick={() => handleSearch(selectedKeys, confirm, dataIndex)}
+              icon={<SearchOutlined />}
+              size="small"
+              style={{
+                width: 90,
+              }}
+            >
+              Search
+            </Button>
+            <Button
+              onClick={() => clearFilters && handleReset(clearFilters)}
+              size="small"
+              style={{
+                width: 90,
+              }}
+            >
+              Reset
+            </Button>
+            <Button
+              type="link"
+              size="small"
+              onClick={() => {
+                confirm({
+                  closeDropdown: false,
+                });
+                setSearchText(selectedKeys[0]);
+                setSearchedColumn(dataIndex);
+              }}
+            >
+              Filter
+            </Button>
+            <Button
+              type="link"
+              size="small"
+              onClick={() => {
+                close();
+              }}
+            >
+              close
+            </Button>
+          </Space>
+        </div>
+      ),
+      filterIcon: (filtered) => (
+        <SearchOutlined
+          style={{
+            color: filtered ? '#1677ff' : undefined,
+          }}
+        />
+      ),
+      onFilter: (value, record) =>
+        record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
+      onFilterDropdownOpenChange: (visible) => {
+        if (visible) {
+          setTimeout(() => searchInput.current?.select(), 100);
+        }
+      },
+      render: (text) =>
+        searchedColumn === dataIndex ? (
+          <Highlighter
+            highlightStyle={{
+              backgroundColor: '#ffc069',
+              padding: 0,
+            }}
+            searchWords={[searchText]}
+            autoEscape
+            textToHighlight={text ? text.toString() : ''}
+          />
+        ) : (
+          text
+        ),
+    });
     useEffect(() => {
         setCategories(props[0].categories.filter(item => (
             item.id.toString().includes(searchValue.toString()) ||
@@ -28,18 +136,44 @@ export default function Categories(props) {
         {
             title: lang.get('strings.ID'),
             dataIndex: 'id',
+            ...getColumnSearchProps('id'),
         },
         {
             title: lang.get('strings.Name'),
             dataIndex: 'name',
+            ...getColumnSearchProps('name'),
         },
         {
             title: lang.get('strings.Product-Type'),
             dataIndex: 'product_type',
+            sorter: (a, b) => a.product_type - b.product_type,
         },
         {
             title: lang.get('strings.Product-Number'),
             dataIndex: 'product_number',
+            sorter: (a, b) => a.product_number - b.product_number,
+        },
+        {
+            title: lang.get('strings.Active'),
+            dataIndex: 'is_active',
+            filters: [
+                {
+                  text: 'Active',
+                  value: "True",
+                },
+                {
+                  text: 'Inactive',
+                  value: "False",
+                },
+            ],
+            onFilter: (value, record) => record.is_active === value,
+            render: (value, record) => {
+                if (value === "True") {
+                    return <Badge status="success" text="Active" />
+                } else {
+                    return <Badge status="error" text="Inactive" />
+                }
+            }
         },
         {
             title: lang.get('strings.Action'),
@@ -152,23 +286,27 @@ export default function Categories(props) {
             >
                 <p className="font-semibold text-xl text-rose-600 leading-tight">{lang.get('strings.Delete-Category-Confirm')}</p>
             </Modal>
-            <div className="py-12">
+            <div className="py-6">
                 <div className='sm:px-6 lg:px-8 w-full'>
-                    <h2 className='font-semibold text-2xl text-gray-800 leading-tight'>{lang.get('strings.Categories')}</h2>
+                    <h2 className='font-semibold font-bebas tracking-wider text-2xl text-gray-800 leading-tight'>{lang.get('strings.Categories')}</h2>
                 </div>
-                <div className="flex gap-4 justify-between w-full mr:3 mb-8 sm:px-6 lg:px-8 mt-8">
+                <div className="flex gap-4 justify-between w-full mr:3 mb-4 sm:px-6 lg:px-8 mt-12">
                     <Button
-                        icon={<PlusCircleOutlined />}
-                        type="primary"
                         shape="round"
                         size={"large"}
+                        style={{ backgroundColor: '#1C274C', color: '#fff', fontWeight: 'bold', fontSize: 'large'}}
                         onClick={createCategory}
-                    >{lang.get('strings.Create-Category')}</Button>
+                    >
+                        <div className="flex items-center gap-3 font-bebas tracking-wider text-lg">
+                            <PlusCircleOutlined />
+                            {lang.get('strings.Create-Category')}
+                        </div>
+                    </Button>
                     <Search placeholder="input id, name"
                         onChange={searchChangeHandler}
                         enterButton
                         bordered
-                        size="large"
+                        size="medium "
                         allowClear
                         style={{
                             width: 304,
@@ -177,17 +315,22 @@ export default function Categories(props) {
                 </div>
                 <div className="max-w-full mx-auto sm:px-6 lg:px-8">
                     <CustomTable
-                        bordered
                         columns={columns}
                         dataSource={categories}
                         onChange={onTableChange}
-                        onRow={(record, index) => ({
-                            style: {
-                                background: record.is_active === 'True' ? '#e6f4ff' : '#fff1f0',
-                            }
-                        })}
+                        summary={() => {
+                            return (
+                              <>
+                                <Table.Summary.Row>
+                                  <Table.Summary.Cell index={0}>Total</Table.Summary.Cell>
+                                  <Table.Summary.Cell index={1}>
+                                    <Text type="success">{categories.length}</Text>
+                                  </Table.Summary.Cell>
+                                </Table.Summary.Row>
+                              </>
+                            );
+                        }}
                     />
-
                 </div>
             </div>
         </Authenticated>

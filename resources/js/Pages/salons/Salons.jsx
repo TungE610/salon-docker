@@ -1,83 +1,197 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import Authenticated from '@/Layouts/Authenticated';
-import { Head } from '@inertiajs/inertia-react';
-import { Button, notification, Modal, Input, Tooltip } from 'antd';
-import { EditOutlined, EyeOutlined, DeleteOutlined } from '@ant-design/icons';
+import { Head, Link } from '@inertiajs/inertia-react';
+import { Badge, notification, Modal, Input, Tooltip, Space, Button } from 'antd';
+import { EyeOutlined, DeleteOutlined, SearchOutlined } from '@ant-design/icons';
 import { useLang } from '../../Context/LangContext';
 import CustomTable from '@/Components/CustomeTable';
 import { Inertia } from '@inertiajs/inertia';
+import Highlighter from 'react-highlight-words';
 import 'antd/dist/antd.css';
 
 export default function Salons(props) {
-    const [salons, setSalons] = useState(props[0].salons);
+    const [salons, setSalons] = useState(props[0].salons.map(salon => {return {...salon, key: salon.id}}));
     const [searchValue, setSearchValue] = useState('');
     const { Search } = Input;
     const { lang } = useLang();
-
-    const filters_package = salons.map(
-        salon => {
-            return {
-                text: salon.package.name + ' - ' + salon.package.id,
-                value: salon.package.id,
-            }
+    const [searchText, setSearchText] = useState('');
+    const [searchedColumn, setSearchedColumn] = useState('');
+    const searchInput = useRef(null);
+    const handleSearch = (selectedKeys, confirm, dataIndex) => {
+      confirm();
+      setSearchText(selectedKeys[0]);
+      setSearchedColumn(dataIndex);
+    };
+    const handleReset = (clearFilters) => {
+      clearFilters();
+      setSearchText('');
+    };
+    const getColumnSearchProps = (dataIndex) => ({
+      filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters, close }) => (
+        <div
+          style={{
+            padding: 8,
+          }}
+          onKeyDown={(e) => e.stopPropagation()}
+        >
+          <Input
+            ref={searchInput}
+            placeholder={`Search ${dataIndex}`}
+            value={selectedKeys[0]}
+            onChange={(e) => setSelectedKeys(e.target.value ? [e.target.value] : [])}
+            onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
+            style={{
+              marginBottom: 8,
+              display: 'block',
+            }}
+          />
+          <Space>
+            <Button
+              type="primary"
+              onClick={() => handleSearch(selectedKeys, confirm, dataIndex)}
+              icon={<SearchOutlined />}
+              size="small"
+              style={{
+                width: 90,
+              }}
+            >
+              Search
+            </Button>
+            <Button
+              onClick={() => clearFilters && handleReset(clearFilters)}
+              size="small"
+              style={{
+                width: 90,
+              }}
+            >
+              Reset
+            </Button>
+            <Button
+              type="link"
+              size="small"
+              onClick={() => {
+                confirm({
+                  closeDropdown: false,
+                });
+                setSearchText(selectedKeys[0]);
+                setSearchedColumn(dataIndex);
+              }}
+            >
+              Filter
+            </Button>
+            <Button
+              type="link"
+              size="small"
+              onClick={() => {
+                close();
+              }}
+            >
+              close
+            </Button>
+          </Space>
+        </div>
+      ),
+      filterIcon: (filtered) => (
+        <SearchOutlined
+          style={{
+            color: filtered ? '#1677ff' : undefined,
+          }}
+        />
+      ),
+      onFilter: (value, record) =>
+        record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
+      onFilterDropdownOpenChange: (visible) => {
+        if (visible) {
+          setTimeout(() => searchInput.current?.select(), 100);
         }
-    ).filter(
-        (item, index, self) => {
-            return self.findIndex((otherItem) => otherItem.text === item.text) === index;
-        }
-    );
-
-    const filters_active = salons.map(
-        salon => {
-            return {
-                text: salon.is_active,
-                value: salon.is_active,
-            }
-        }
-    ).filter(
-        (item, index, self) => {
-            return self.findIndex((otherItem) => otherItem.text === item.text) === index;
-        }
-    );
-
+      },
+      render: (text) =>
+        searchedColumn === dataIndex ? (
+          <Highlighter
+            highlightStyle={{
+              backgroundColor: '#ffc069',
+              padding: 0,
+            }}
+            searchWords={[searchText]}
+            autoEscape
+            textToHighlight={text ? text.toString() : ''}
+          />
+        ) : (
+          text
+        ),
+    });
     const columns = [
         {
             title: 'ID',
             dataIndex: 'id',
+            align: 'center',
+            sorter: (a, b) => a.id - b.id,
         },
         {
             title: lang.get('strings.Salon-Name'),
             dataIndex: 'name',
+            align: 'center',
+            ...getColumnSearchProps('name'),
         },
         {
             title: lang.get('strings.Address'),
             dataIndex: 'address',
+            align: 'center',
+            ...getColumnSearchProps('address'),
         },
         {
             title: lang.get('strings.Owner-Email'),
             dataIndex: 'owner_email',
+            align: 'center',
+            ...getColumnSearchProps('owner_email'),
         },
         {
-            title: lang.get('strings.Registration-Package'),
-            dataIndex: 'package_id',
-            filters: filters_package,
-            onFilter: (value, record) => record.package_id === value,
+            title: 'Package',
+            dataIndex: 'package',
+            align: 'center',
+            filters: [
+                {
+                  text: 'Big',
+                  value: 'big',
+                },
+                {
+                  text: 'Medium',
+                  value: 'medium',
+                },
+                {
+                  text: 'Small',
+                  value: 'small',
+                }
+            ],
+            onFilter: (value, record) => record.package === value,
         },
         {
             title: lang.get('strings.Staff-Number'),
             dataIndex: 'num_staffs',
             sorter: (a, b) => a.num_staffs - b.num_staffs,
-        },
-        {
-            title: lang.get('strings.Customer-Number'),
-            dataIndex: 'num_customers',
-            sorter: (a, b) => a.num_customers - b.num_customers,
+            align: 'center'
         },
         {
             title: lang.get('strings.Active'),
             dataIndex: 'is_active',
-            filters: filters_active,
+            filters: [
+                {
+                  text: 'Active',
+                  value: "True",
+                },
+                {
+                  text: 'Inactive',
+                  value: "False",
+                },
+            ],
             onFilter: (value, record) => record.is_active === value,
+            render: (value, record) => {
+                if (value === "True") {
+                    return <Badge status="success" text="Active" />
+                } else {
+                    return <Badge status="error" text="Inactive" />
+                }
+            }
         },
         {
             title: lang.get('strings.Action'),
@@ -85,18 +199,11 @@ export default function Salons(props) {
                 return (
                     <div className='flex gap-2'>
                         <div className='pb-2'>
-                            <a href={route('salons.edit', {salon : record.id})}>
-                                <Tooltip title="Edit">
-                                    <EditOutlined style={{ fontSize: 19, color: '#1c5dfd' }}/>
-                                </Tooltip>
-                            </a>
-                        </div>
-                        <div className='pb-2'>
-                            <a href={route('salons.show', {salon : record.id})}>
+                            <Link href={route('salons.show', {salon : record})}>
                                 <Tooltip title="View">
                                     <EyeOutlined style={{ fontSize: 19 }} />
                                 </Tooltip>
-                            </a>
+                            </Link>
                         </div>
                         <div className='pb-2'>
                             <Tooltip title="Delete">
@@ -203,11 +310,11 @@ export default function Salons(props) {
             notificationNumber={props.unreadNotificationsCount}
         >
             <Head title="Salons" />
-            <div className="py-12">
+            <div className="py-6">
                 <div className='sm:px-6 lg:px-8 w-full'>
-                    <h2 className='font-semibold text-2xl text-gray-800 leading-tight'>{lang.get('strings.Salons')}</h2>
+                    <h2 className='font-semibold font-bebas tracking-wider text-2xl text-gray-800 leading-tight'>{lang.get('strings.Salons')}</h2>
                 </div>
-                <div className="flex justify-end w-full mr:3 mb-8 sm:px-6 lg:px-8">
+                <div className="flex justify-end w-full mr:3 mb-8 sm:px-6 lg:px-8 mt-12">
                     <Search placeholder="input id, salon name, owner email"
                         onSearch={onSearch} enterButton bordered
                         size="large"
@@ -219,7 +326,6 @@ export default function Salons(props) {
                 </div>
                 <div className="max-w-full mx-auto sm:px-6 lg:px-8">
                     <CustomTable
-                        bordered
                         columns={columns}
                         dataSource={salons}
                         onChange={onTableChange} />

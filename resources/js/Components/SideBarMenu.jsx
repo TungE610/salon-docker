@@ -2,6 +2,10 @@ import {React, useState} from 'react';
 import SideBarItem from './SideBarItem';
 import dashboardIcon from '../../../public/images/dashboard.svg';
 import peopleIcon from '../../../public/images/people.svg';
+import salonIcon from '../../../public/images/salon.svg';
+import calendarIcon from '../../../public/images/calendar.svg';
+import productIcon from '../../../public/images/product.svg';
+import categoryIcon from '../../../public/images/category.svg';
 // import { LangProvider, useLang } from '../Context/LangContext';
 import {Select} from 'antd';
 
@@ -17,7 +21,31 @@ const PeopleIcon = () => {
     )
 }
 
-const SideBarMenu = () => {
+const SalonIcon = () => {
+    return (
+        <img src={salonIcon} alt="people icon" />
+    )
+}
+
+const CalendarIcon = () => {
+    return (
+        <img src={calendarIcon} alt="people icon" />
+    )
+}
+
+const ProductIcon = () => {
+    return (
+        <img src={productIcon} alt="people icon" />
+    )
+}
+
+const CategoryIcon = () => {
+    return (
+        <img src={categoryIcon} alt="people icon" />
+    )
+}
+
+const SideBarMenu = ({ auth, children, ...props }) => {
     // const { lang, changeLocale } = useLang();
     // const [selectedLocale, setSelectedLocale] = useState(lang.getLocale());
 
@@ -30,16 +58,39 @@ const SideBarMenu = () => {
 
     //     Inertia.get(route('locale', { lang: value } ));
     // };
+    // const systemRole = auth;
+    // console.log(systemRole);
     const handleClick = (index) => {
         localStorage.removeItem('activeTab');
         localStorage.setItem("activeTab", index);
     };
 
-    const items = [
+    const superAdminItems = [
         {
             icon: DashboardIcon,
             item: 'Dashboard',
-            url: 'dashboard',
+            url: 'admin.dashboard',
+            key: 1,
+        },
+        {
+            icon: PeopleIcon,
+            item: 'Registration',
+            url: 'registrations.index',
+            key: 2,
+        },
+        {
+            icon: SalonIcon,
+            item: 'Salon',
+            url: 'salons.index',
+            key: 3,
+        },
+    ]
+
+    const SalonManagerItems = [
+        {
+            icon: DashboardIcon,
+            item: 'Dashboard',
+            url: 'admin.dashboard',
             key: 1,
         },
         {
@@ -48,14 +99,34 @@ const SideBarMenu = () => {
             url: 'customers.index',
             key: 2,
         },
+        {
+            icon: CalendarIcon,
+            item: 'Orders',
+            url: 'orders.index',
+            key: 3,
+        },
+        {
+            icon: ProductIcon,
+            item: 'Products',
+            url: 'products.index',
+            key: 4,
+        },
+        {
+            icon: CategoryIcon,
+            item: 'Categories',
+            url: 'categories.index',
+            key: 5,
+        },
     ]
+
+    const menuItems = auth.user.system_role === 'super admin' ? superAdminItems : SalonManagerItems;
 
     return (
         <div className="flex flex-col justify-between absolute bottom-0 top-20 w-full">
             <div className="w-full">
                 
                 {
-                     items.map((item) => {
+                    menuItems.map((item) => {
                         return (
                             <div key={item.key}> 
                                 <SideBarItem key={item.key} index={item.key} icon={item.icon} item={item.item} url={item.url} setItem={handleClick} isActive={item.key == localStorage.getItem('activeTab')}/>

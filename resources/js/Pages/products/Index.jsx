@@ -1,11 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Authenticated from '@/Layouts/Authenticated';
 import { Head } from '@inertiajs/inertia-react';
 import { useLang } from '../../Context/LangContext';
 import CustomTable from '@/Components/CustomeTable';
-import { Input, Modal, notification, Tag, Button, Tooltip } from 'antd';
-import { EditOutlined, EyeOutlined, PlusCircleOutlined, DeleteOutlined } from '@ant-design/icons';
-import { Inertia } from '@inertiajs/inertia'
+import { Input, Modal, notification, Button, Tooltip, Space } from 'antd';
+import { EditOutlined, EyeOutlined, PlusCircleOutlined, DeleteOutlined, SearchOutlined } from '@ant-design/icons';
+import { Inertia } from '@inertiajs/inertia';
+import Highlighter from 'react-highlight-words';
 import 'antd/dist/antd.css';
 
 export default function Products(props) {
@@ -16,7 +17,113 @@ export default function Products(props) {
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const { lang } = useLang();
     const { Search } = Input;
-
+    const [searchText, setSearchText] = useState('');
+    const [searchedColumn, setSearchedColumn] = useState('');
+    const searchInput = useRef(null);
+    
+    const handleSearch = (selectedKeys, confirm, dataIndex) => {
+      confirm();
+      setSearchText(selectedKeys[0]);
+      setSearchedColumn(dataIndex);
+    };
+    const handleReset = (clearFilters) => {
+      clearFilters();
+      setSearchText('');
+    };
+    const getColumnSearchProps = (dataIndex) => ({
+      filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters, close }) => (
+        <div
+          style={{
+            padding: 8,
+          }}
+          onKeyDown={(e) => e.stopPropagation()}
+        >
+          <Input
+            ref={searchInput}
+            placeholder={`Search ${dataIndex}`}
+            value={selectedKeys[0]}
+            onChange={(e) => setSelectedKeys(e.target.value ? [e.target.value] : [])}
+            onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
+            style={{
+              marginBottom: 8,
+              display: 'block',
+            }}
+          />
+          <Space>
+            <Button
+              type="primary"
+              onClick={() => handleSearch(selectedKeys, confirm, dataIndex)}
+              icon={<SearchOutlined />}
+              size="small"
+              style={{
+                width: 90,
+              }}
+            >
+              Search
+            </Button>
+            <Button
+              onClick={() => clearFilters && handleReset(clearFilters)}
+              size="small"
+              style={{
+                width: 90,
+              }}
+            >
+              Reset
+            </Button>
+            <Button
+              type="link"
+              size="small"
+              onClick={() => {
+                confirm({
+                  closeDropdown: false,
+                });
+                setSearchText(selectedKeys[0]);
+                setSearchedColumn(dataIndex);
+              }}
+            >
+              Filter
+            </Button>
+            <Button
+              type="link"
+              size="small"
+              onClick={() => {
+                close();
+              }}
+            >
+              close
+            </Button>
+          </Space>
+        </div>
+      ),
+      filterIcon: (filtered) => (
+        <SearchOutlined
+          style={{
+            color: filtered ? '#1677ff' : undefined,
+          }}
+        />
+      ),
+      onFilter: (value, record) =>
+        record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
+      onFilterDropdownOpenChange: (visible) => {
+        if (visible) {
+          setTimeout(() => searchInput.current?.select(), 100);
+        }
+      },
+      render: (text) =>
+        searchedColumn === dataIndex ? (
+          <Highlighter
+            highlightStyle={{
+              backgroundColor: '#ffc069',
+              padding: 0,
+            }}
+            searchWords={[searchText]}
+            autoEscape
+            textToHighlight={text ? text.toString() : ''}
+          />
+        ) : (
+          text
+        ),
+    });
     useEffect(() => {
         setProducts(props[0].products.filter(item => (
             item.id.toString().includes(searchValue.toString()) ||
@@ -31,35 +138,41 @@ export default function Products(props) {
         {
             title: 'ID',
             dataIndex: 'id',
-        },
-        {
-            title: lang.get('strings.Category'),
-            dataIndex: 'category',
+            ...getColumnSearchProps('id'),
         },
         {
             title: lang.get('strings.Name'),
             dataIndex: 'name',
+            ...getColumnSearchProps('name'),
+        },
+        {
+            title: lang.get('strings.Category'),
+            dataIndex: 'category',
+            ...getColumnSearchProps('category'),
         },
         {
             title: lang.get('strings.Unit'),
             dataIndex: 'unit',
+            ...getColumnSearchProps('unit'),
         },
         {
             title: lang.get('strings.Cost-Per-Unit'),
             dataIndex: 'cost',
+            sorter: (a, b) => a.cost - b.cost,
         },
         {
             title: lang.get('strings.Description'),
             dataIndex: 'description',
-            align: 'center'
+            width: 600,
+            ...getColumnSearchProps('description'),
         },
         {
             title: lang.get('strings.Quantity'),
             dataIndex: 'quantity',
+            sorter: (a, b) => a.quantity - b.quantity,
         },
         {
             title: lang.get('strings.Action'),
-            align: 'center',
             filters: [
                 {
                     text: 'False',
@@ -163,23 +276,27 @@ export default function Products(props) {
             >
                 <p className="font-semibold text-xl text-rose-600 leading-tight">Are you sure to delete this product ?</p>
             </Modal>
-            <div className="py-12">
+            <div className="py-6">
                 <div className='sm:px-6 lg:px-8 w-full'>
-                    <h2 className='font-semibold text-2xl text-gray-800 leading-tight'>{lang.get('strings.Products')}</h2>
+                    <h2 className='font-semibold font-bebas tracking-wider text-2xl text-gray-800 leading-tight'>{lang.get('strings.Products')}</h2>
                 </div>
-                <div className="flex justify-between mt-8 w-full mr:3 mb-8 sm:px-6 lg:px-8">
+                <div className="flex justify-between w-full mr:3 mb-4 sm:px-6 lg:px-8 mt-12">
                     <Button
-                        icon={<PlusCircleOutlined />}
-                        type="primary"
                         shape="round"
                         size={"large"}
+                        style={{ backgroundColor: '#1C274C', color: '#fff', fontWeight: 'bold', fontSize: 'large'}}
                         onClick={createProduct}
-                    >{lang.get('strings.Create-Product')}</Button>
+                    >
+                        <div className="flex items-center gap-3 font-bebas tracking-wider text-lg">
+                            <PlusCircleOutlined />
+                            {lang.get('strings.Create-Product')}
+                        </div>
+                    </Button>
                     <Search placeholder="input id, phone, email or name"
                         onChange={searchChangeHandler}
                         enterButton
                         bordered
-                        size="large"
+                        size="medium"
                         allowClear
                         style={{
                             width: 304,
@@ -188,15 +305,9 @@ export default function Products(props) {
                 </div>
                 <div className="max-w-full mx-auto sm:px-6 lg:px-8">
                     <CustomTable
-                        bordered
                         columns={columns}
                         dataSource={products}
                         onChange={onTableChange}
-                        onRow={(record, index) => ({
-                            style: {
-                                background: record.is_active === 'True' ? '#e6f4ff' : '#fff1f0',
-                            }
-                        })}
                     />
 
                 </div>
