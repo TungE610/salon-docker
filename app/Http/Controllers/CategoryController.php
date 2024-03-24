@@ -169,19 +169,19 @@ class CategoryController extends Controller
      */
     public function destroy(Category $category)
     {
-        try {
-            DB::transaction(
-                function () use ($category) {
-                    $category->delete();
-                }
-            );
-        } catch (Exception $e) {
-            return redirect()->back()->withErrors(
-                [
-                    'delete' => __('There was an error'),
-                ]
-            );
-        }
+        $category->delete();
+        // try {
+        //     DB::transaction(
+        //         function () use ($category) {
+        //         }
+        //     );
+        // } catch (Exception $e) {
+        //     return redirect()->back()->withErrors(
+        //         [
+        //             'delete' => __('There was an error'),
+        //         ]
+        //     );
+        // }
         
         return redirect()->route('categories.index');
     }

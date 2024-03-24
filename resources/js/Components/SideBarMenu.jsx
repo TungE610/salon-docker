@@ -6,6 +6,10 @@ import salonIcon from '../../../public/images/salon.svg';
 import calendarIcon from '../../../public/images/calendar.svg';
 import productIcon from '../../../public/images/product.svg';
 import categoryIcon from '../../../public/images/category.svg';
+import productProductIcon from '../../../public/images/product-product.svg';
+import productServiceIcon from '../../../public/images/product-service.svg';
+import productPackageIcon from '../../../public/images/product-package.svg';
+
 // import { LangProvider, useLang } from '../Context/LangContext';
 import {Select} from 'antd';
 
@@ -110,6 +114,11 @@ const SideBarMenu = ({ auth, children, ...props }) => {
             item: 'Products',
             url: 'products.index',
             key: 4,
+            children: [
+                {
+                    
+                }
+            ]
         },
         {
             icon: CategoryIcon,

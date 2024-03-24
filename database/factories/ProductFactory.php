@@ -22,6 +22,9 @@ class ProductFactory extends Factory
             'quantity' =>$this->faker->randomNumber(),
             'description' => $this->faker->text(),
             'is_active' => true,
+            'product_type' => $this->faker->randomElement([0, 1, 2]),
+            'origin' => $this->faker->text(10),
+            'price' => $this->faker->randomNumber(),
             'created_at' => now(),
             'updated_at' => now(),
         ];

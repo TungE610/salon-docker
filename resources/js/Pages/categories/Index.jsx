@@ -234,6 +234,9 @@ export default function Categories(props) {
     };
 
     const handleOk = () => {
+        setIsDeleteModalOpen(false);
+        setCategories(prev => prev.filter(category => category.id !== deletedCategoryId));
+
         Inertia.delete(route('categories.destroy', { category: deletedCategoryId }), {}, {
             onSuccess: () => {
                 openNotification('success',
@@ -249,7 +252,6 @@ export default function Categories(props) {
             }
         })
 
-        setIsDeleteModalOpen(false);
     };
 
     const handleCancel = () => {
@@ -284,7 +286,7 @@ export default function Categories(props) {
                 onOk={() => { handleOk() }}
                 onCancel={handleCancel}
             >
-                <p className="font-semibold text-xl text-rose-600 leading-tight">{lang.get('strings.Delete-Category-Confirm')}</p>
+                <p className="font-semibold text-xl text-rose-700 leading-tight">{lang.get('strings.Delete-Category-Confirm')}</p>
             </Modal>
             <div className="py-6">
                 <div className='sm:px-6 lg:px-8 w-full'>

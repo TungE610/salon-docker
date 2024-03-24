@@ -161,15 +161,19 @@ export default function Products(props) {
             sorter: (a, b) => a.cost - b.cost,
         },
         {
-            title: lang.get('strings.Description'),
-            dataIndex: 'description',
-            width: 600,
-            ...getColumnSearchProps('description'),
+            title: "Price",
+            dataIndex: 'price',
+            sorter: (a, b) => a.price - b.price,
         },
         {
             title: lang.get('strings.Quantity'),
             dataIndex: 'quantity',
             sorter: (a, b) => a.quantity - b.quantity,
+        },
+      {
+            title: "Origin",
+            dataIndex: 'origin',
+            ...getColumnSearchProps('origin'),
         },
         {
             title: lang.get('strings.Action'),
@@ -308,6 +312,17 @@ export default function Products(props) {
                         columns={columns}
                         dataSource={products}
                         onChange={onTableChange}
+                        expandable={{
+                          expandedRowRender: (record) => (
+                            <p
+                              style={{
+                                margin: 0,
+                              }}
+                            >
+                              Description: {record.description}
+                            </p>
+                          ),
+                        }}
                     />
 
                 </div>
